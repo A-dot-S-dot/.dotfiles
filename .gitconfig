@@ -1,0 +1,8 @@
+[user]
+	email = alexey.schwarzmann@tu-dortmund.de
+	name = A-dot-S-dot
+	emacs = alexey.schwarzmann@tu-dortmund.de
+[merge]
+	conflictStyle = diff3
+[diff]
+	submodule = log

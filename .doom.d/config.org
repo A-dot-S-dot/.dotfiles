@@ -1,0 +1,1184 @@
+#+TITLE: Main Configuration
+
+* Basic Configuration
+Make this file run (slightly) faster with lexical binding
+
+#+begin_src emacs-lisp
+;;; config.el -*- lexical-binding: t; -*-
+#+end_src
+
+* Personal Information
+Some feature need some personal information.
+
+#+begin_src emacs-lisp
+(setq user-full-name "Alexey Schwarzmann"
+      user-mail-address "alexey.schwarzmann@math.tu-dortmund.de")
+
+(defvar user-directory "~/Dropbox/Alexey"
+  "In this directory I store all my personal files.")
+#+end_src
+
+* Movement
+Treat visual lines like casual ones while moving.
+
+#+begin_src emacs-lisp
+(map! :m "j" #'evil-next-visual-line
+      :m "k" #'evil-previous-visual-line)
+#+end_src
+
+Also do not highlight searched strings.
+
+#+begin_src emacs-lisp
+(setq evil-ex-search-highlight-all nil)
+#+end_src
+
+Use movement commands of =smartparens= for balanced expressions.
+
+#+begin_src emacs-lisp
+(map! "C-M-l" nil)
+(map! "C-M-h" nil)
+
+(after! smartparens
+  (map! "C-M-l" #'sp-forward-sexp)
+  (map! "C-M-h" #'sp-backward-sexp))
+#+end_src
+
+* Interface
+Place here settings for the interface.
+
+** Fonts and Theme
+The font is inspired by [[https://github.com/daviwil][daviwil]]'s configuration. I also like the default doom
+theme which is also inspired by atom.
+
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Fira Code Retina" :size 18)
+      doom-variable-pitch-font (font-spec :family "Cantarell" :weight 'regular))
+(setq doom-theme 'doom-solarized-light)
+(setq second-theme 'doom-one)
+#+end_src
+
+Toggle light theme via binding.
+
+#+begin_src emacs-lisp
+(defun als-toggle-light-theme ()
+  "Toggles `doom-one-light` if `doom-one` is active and vice versa."
+  (interactive)
+  (if (equal doom-theme second-theme)
+      (load-theme 'doom-solarized-light)
+    (load-theme second-theme))
+  (als-refresh-latex-preview))
+
+(map! :leader
+      "tl" nil
+      :desc "toggle light theme" "tl" #'als-toggle-light-theme)
+#+end_src
+
+** Transperency
+Add a function for toggling transparency.
+
+#+begin_src emacs-lisp
+(defun als-toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(90 . 90) '(100 . 100)))))
+
+(map! :leader
+      :desc "Transperency"
+      "tT" #'als-toggle-transparency)
+
+#+end_src
+
+** Line Settings
+Relative line numbers are handy for some vim bindings.
+
+#+begin_src emacs-lisp
+(setq display-line-numbers-type 'relative)
+#+end_src
+
+Also enable =auto-fill-mode= for automated line breaks.
+
+#+begin_src emacs-lisp
+(add-hook! 'text-mode-hook #'turn-on-auto-fill)
+#+end_src
+
+Use visual lines.
+
+#+begin_src emacs-lisp
+(global-visual-line-mode)
+#+end_src
+
+** Maximise frame
+I want a maximised frame at startup.
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'fullscreen 'fullscreen)
+(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
+#+end_src
+
+** Visual fill column
+Enable some padding using [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]].
+
+#+begin_src emacs-lisp
+(use-package! visual-fill-column
+  :custom
+  (visual-fill-column-width 100)
+  (visual-fill-column-center-text t)
+
+  :hook
+  (helpful-mode . visual-fill-column-mode)
+  (Info-mode . visual-fill-column-mode)
+  (org-mode . visual-fill-column-mode)
+  (org-agenda-mode . visual-fill-column-mode)
+  (prog-mode . visual-fill-column-mode)
+  (vterm-mode . visual-fill-column-mode)
+  (mu4e-main-mode . visual-fill-column-mode))
+#+end_src
+
+** Popup rules
+Let appear popup windows on the right side.
+
+#+begin_src emacs-lisp
+(setq +popup-defaults
+      (list :side   'right
+        :height 0.16
+        :width  0.5
+        :quit   t
+        :select #'ignore
+        :ttl    5))
+#+end_src
+
+Some custom rules.
+
+#+begin_src emacs-lisp
+(after! org
+  (set-popup-rules!
+    '(("^\\*Capture\\*$\\|CAPTURE-.*$"  :size 0.5)
+      ("^\\*Org Select\\*"              :size 0.5)
+      ("^ ?\\*\\(?:Agenda Com\\|Calendar\\|Org Export Dispatcher\\)"
+            :slot -1 :vslot -1 :side bottom :size #'+popup-shrink-to-fit :ttl 0))))
+
+(set-popup-rules!
+  '(("^\\*helpful"              :side right :size 0.5)
+    ("^\\*info\\*"              :side right :size 0.5)
+    ("^\\*Google Translate\\*"  :side right :size 0.5 :select t)))
+#+end_src
+
+* Tabs and frames
+Add bindings for tabs and frames.
+
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix "w"
+       "t" nil
+       (:prefix ("t" . "tab")
+        "n" #'tab-new
+        "h" #'tab-previous
+        "l" #'tab-next
+        "c" #'tab-close
+        "C-o" #'tab-close-other
+        "r" #'tab-rename)
+       (:prefix ("f" . "frame")
+        "n" #'make-frame
+        "o" #'other-frame
+        "c" #'delete-frame
+        "C-o" #'delete-other-frames)))
+#+end_src
+
+* Completions with =vertico=
+View settings.
+
+#+begin_src emacs-lisp
+(map! :map vertico-map
+      "C-h" #'vertico-directory-up
+      "C-l" #'vertico-directory-enter)
+#+end_src
+
+* System Management
+Do not ask for quitting confirmation.
+
+#+begin_src emacs-lisp
+(setq confirm-kill-emacs nil)
+#+end_src
+
+Add functions for controlling system
+
+#+begin_src emacs-lisp
+;;;###autoload
+(defun als-poweroff ()
+  "Shutdown system."
+  (interactive)
+  (save-some-buffers)
+  (shell-command "poweroff"))
+
+;;;###autoload
+(defun als-reboot ()
+  "Reboot system."
+  (interactive)
+  (save-some-buffers)
+  (shell-command "reboot"))
+
+;;;###autoload
+(defun als-sleep ()
+  "Suspend system."
+  (interactive)
+  (shell-command "systemctl suspend"))
+
+(map! :leader
+      "qs" nil
+      "qr" nil
+      "qR" nil)
+
+(map! :leader
+      :desc "Restart Emacs" "qr" #'doom/restart
+      :prefix ("qs" . "quit/system")
+      "p" #'als-poweroff
+      "r" #'als-reboot
+      "s" #'als-sleep)
+#+end_src
+
+* File Management with =Dired=
+I want type less to confirm deletion.
+
+#+begin_src emacs-lisp
+(setq dired-deletion-confirmer 'y-or-n-p)
+#+end_src
+
+* Buffer Management
+Prefer to reuse existing windows, especially those showing a buffer of the same mode.
+
+#+begin_src emacs-lisp
+(setq display-buffer-base-action
+      '((display-buffer-reuse-window
+         display-buffer-reuse-mode-window
+         display-buffer-same-window
+         display-buffer-in-previous-window)))
+#+end_src
+
+
+Also want to ensure that frame is splitted horizontally.
+
+#+begin_src emacs-lisp
+(setq split-width-threshold 100)
+#+end_src
+
+* Org
+** Save org buffers regularly
+
+#+begin_src emacs-lisp
+(add-hook! 'auto-save-hook 'org-save-all-org-buffers)
+#+end_src
+
+** Display preferences
+Use bullet characters instead of asterisks. Also change title font to make it
+more looking like a title.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-superstar-headline-bullets-list '("◉" "○" "●" "○"))
+(custom-set-faces! '(org-document-title :font "Cantarell" :weight bold :height 1.3))
+#+END_SRC
+
+Hide emphasis markers and setup ellipsis.
+
+#+begin_src emacs-lisp
+(setq org-hide-emphasis-markers t)
+(setq org-ellipsis " ▼")
+#+end_src
+
+Preview latex fragments and show inline images.
+
+#+begin_src emacs-lisp
+(setq org-startup-with-latex-preview t)
+(setq org-startup-with-inline-images t)
+#+end_src
+
+Show content in a org file after entering.
+
+#+begin_src emacs-lisp
+(after! org
+  (setq org-startup-folded 'content))
+#+end_src
+
+** Storage management
+I store my org files in Dropbox so it is not
+necessary to write out every path. Therefore I define a function to
+simplify the paths.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-directory "~/Dropbox/Alexey/Agenda")
+#+END_SRC
+
+Setup the directory for the org agenda.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files
+      (list (expand-file-name "todo.org" org-directory)))
+#+END_SRC
+
+** Workflow States
+My TODO keywords based on [[https://whhone.com/posts/org-mode-task-management/][this blog]].
+
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keywords '((sequence "TODO(t)" "BACK(b)" "|" "DONE(d)" )))
+  (setq org-todo-keyword-faces
+        '(("BACK" . (:foreground "orange red" :weight bold)))))
+#+end_src
+
+Record the time that a todo was archived.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
+#+END_SRC
+
+Show deadline warning 7 days before itself by default.
+
+#+begin_src emacs-lisp
+(setq org-deadline-warning-days 7)
+#+end_src
+
+Fontify the whole prioritised entry.
+
+#+begin_src emacs-lisp
+(setq org-agenda-fontify-priorities t)
+#+end_src
+
+** Agenda
+My Agenda is highly inspired by [[https://github.com/psamim][psamim]].
+
+*** Icons for Agenda
+Here I add Icons for my agenda. More icons can be downloaded [[https://icon-icons.com][here]].
+
+#+begin_src emacs-lisp
+(setq org-agenda-category-icon-alist nil)
+(setq als-icon-path (expand-file-name "icons" org-directory))
+(setq als-org-categories '("appleOs"
+                           "baby"
+                           "bike"
+                           "birthday-boy"
+                           "birthday-girl"
+                           "car"
+                           "chrome"
+                           "clean"
+                           "computer"
+                           "date"
+                           "emacs"
+                           "family"
+                           "friends"
+                           "gift"
+                           "git"
+                           "guix"
+                           "home"
+                           "linux"
+                           "mail"
+                           "math"
+                           "medical"
+                           "money"
+                           "music"
+                           "loop"
+                           "org"
+                           "others"
+                           "python"
+                           "scholarship"
+                           "sport"
+                           "spotify"
+                           "trash"
+                           "ubuntu"
+                           "uni"
+                           "windows"
+                           "work"))
+
+(dolist (category als-org-categories)
+  (add-to-list 'org-agenda-category-icon-alist
+               (let ((category-path (expand-file-name (concat category ".svg") als-icon-path)))
+                 (append (list category category-path)
+                       '(nil nil :ascent center :mask heuristic :width 28)))))
+#+end_src
+
+*** Date format
+In the following I set the format for the date in my agenda.
+
+#+begin_src emacs-lisp
+(setq org-agenda-format-date 'my-org-agenda-format-date-aligned)
+
+(defun my-org-agenda-format-date-aligned (date)
+  "Format a DATE string for display in the daily/weekly agenda, or timeline.
+This function makes sure that dates are aligned for easy reading."
+  (require 'cal-iso)
+  (let* ((dayname (calendar-day-name date 1 nil))
+         (day (cadr date))
+         (persian (substring (calendar-persian-date-string date) 0 -6))
+         (day-of-week (calendar-day-of-week date))
+         (month (car date))
+         (monthname (calendar-month-name month 1))
+         (year (nth 2 date))
+         (iso-week (org-days-to-iso-week
+                    (calendar-absolute-from-gregorian date)))
+         (weekyear (cond ((and (= month 1) (>= iso-week 52))
+                          (1- year))
+                         ((and (= month 12) (<= iso-week 1))
+                          (1+ year))
+                         (t year)))
+         (weekstring (if (= day-of-week 1)
+                         (format ", W%02d" iso-week)
+                         ""
+                       )))
+         (format " %-2s. %2d %s%s"
+            dayname day monthname weekstring)))
+#+end_src
+
+*** Custom agenda
+General settings for agenda.
+
+#+begin_src emacs-lisp
+(setq org-agenda-block-separator nil
+      org-agenda-breadcrumbs-separator " ❱ "
+      org-agenda-deadline-leaders '("Deadline:" "(In %3d d.)" "(%2d d. ago)")
+      org-agenda-scheduled-leaders '("" "(Since %2d d.)")
+      org-agenda-todo-ignore-scheduled 'future
+      org-agenda-todo-ignore-deadlines 'far
+      org-agenda-todo-keyword-format ""
+      org-agenda-todo-ignore-time-comparison-use-seconds t
+      org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
+      org-agenda-prefix-format "   %-3i %?-12 e%?-12 s%b"
+      org-agenda-time-leading-zero nil
+      org-agenda-timegrid-use-ampm nil
+      org-agenda-current-time-string "ᐊ┈┈┈┈┈┈┈ Now"
+      org-agenda-time-grid (quote ((today remove-match) (0800 1400 2000) "      " "┈┈┈┈┈┈┈┈┈┈┈┈┈"))
+      org-agenda-remove-tags t)
+#+end_src
+
+My custom agenda.
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+      '(("d" "Dashboard"
+         (
+          ;; (agenda ""
+          ;;         ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'any))
+          ;;          (org-agenda-start-day "+0d")
+          ;;          (org-agenda-span 2)
+          ;;          (org-agenda-overriding-header "⚡ Calendar\n")
+          ;;          (org-agenda-prefix-format "   %-3i %-13 t%b")))
+
+          (todo "TODO"
+                ((org-agenda-overriding-header "\n\n⚡ Today's todos\n")))))
+
+        ("b" "Backlog"
+         ((todo "BACK"
+                ((org-agenda-overriding-header "⚡ Backlog\n")))))))
+#+end_src
+
+*** Display settings
+Color ⚡.
+
+#+begin_src emacs-lisp
+(defun agenda-color-char ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "⚡" nil t)
+      (put-text-property (match-beginning 0) (match-end 0)
+                         'face '(:height 200 :foreground "gold2" :weight bold)))))
+#+end_src
+
+Clean frame.
+
+#+begin_src emacs-lisp
+(add-hook 'org-agenda-finalize-hook #'set-window-clean)
+
+(defun set-window-clean ()
+  (agenda-color-char)
+  (setq mode-line-format nil)
+  (setq header-line-format " ")
+  (set-face-attribute 'header-line nil)
+  (set-window-margins (frame-selected-window) 4))
+
+(setq org-agenda-window-setup 'current-window)
+(setq org-agenda-start-with-log-mode t)
+#+end_src
+
+*** Bindings
+Bindings for dashboard.
+
+#+begin_src emacs-lisp
+;;;###autoload
+(defun als-open-dashboard ()
+  (interactive)
+  (org-agenda nil "d")
+  (evil-goto-first-line))
+
+;;;###autoload
+(defun als-open-backlog ()
+  (interactive)
+  (org-agenda nil "b")
+  (evil-goto-first-line))
+
+(map! :leader
+      :desc "Backlog" "om" #'als-open-backlog
+      :desc "Dashboard" "oo" #'als-open-dashboard)
+#+end_src
+
+More bindings...
+
+#+begin_src emacs-lisp
+;; Disable keys if used otherwise by default and redifine them.
+(after! (evil-org-agenda org)
+  (map! :map (org-agenda-mode-map org-agenda-keymap)
+      "o" nil
+      "r" nil)
+  (map! :map evil-org-agenda-mode-map
+        :m "d" nil
+        :m "s" nil)
+  (map! :map org-agenda-mode-map
+      "d" #'org-agenda-kill
+      "o" #'org-agenda-open-link
+      "r" #'org-agenda-refile
+      "s" #'org-agenda-schedule))
+#+end_src
+
+** Capture Templates
+Define a few common tasks as capture templates.
+
+#+BEGIN_SRC emacs-lisp
+(after! org
+  (setq org-capture-templates
+        `(("b" "Birthday" entry (file+headline ,(expand-file-name "todo.org" org-directory) "Birthday")
+           "* TODO [#A] %^{Name}\nSCHEDULED: %^{Birthday}t \n:PROPERTIES:\n:CATEGORY: %^{gender|birthday-boy|birthday-girl}\n:END: \n%?" :empty-lines 1 :refile-targets "Birthday")
+
+          ("t" "Task")
+          ("tb" "Task for Backlog" entry (file ,(expand-file-name "todo.org" org-directory))
+           "* BACK %^{Task Description}%^{CATEGORY}p\n%?" :empty-lines 1)
+          ("tp" "Task at point" entry (file ,(expand-file-name "todo.org" org-directory))
+           "* TODO %^{Task Description}\n SCHEDULED: %^{Time}t %^{CATEGORY}p\n  %a\n  %i\n%?" :empty-lines 1)
+          ("ts" "Scheduled Task" entry (file ,(expand-file-name "todo.org" org-directory))
+           "* TODO %^{Task Description}\nSCHEDULED: %^{Time}t %^{CATEGORY}p \n%?" :empty-lines 1))))
+ #+END_SRC
+
+Refiling according to the document's hierarchy.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-outline-path-complete-in-steps nil)
+(setq org-refile-use-outline-path t)
+#+END_SRC
+
+** Org Timer
+Default settings.
+
+#+begin_src emacs-lisp
+(setq org-clock-sound "~/Dropbox/Alexey/ding.wav")
+(setq org-timer-default-timer "30:00")
+#+end_src
+
+*** Bindings
+
+#+begin_src emacs-lisp
+(map! :leader :prefix ("tt" . "timer")
+      "t" #'org-timer-set-timer
+      "p" #'org-timer-pause-or-continue
+      "s" #'org-timer-stop)
+#+end_src
+
+** Org-Roam
+*** Basic settings
+Set =org-roam-directory=.
+
+#+begin_src emacs-lisp
+(setq org-roam-directory (expand-file-name "Notizen" user-directory))
+#+end_src
+
+Just use only the id for filenames.
+
+#+begin_src emacs-lisp
+(setq org-roam-capture-templates
+      '(("h" "human being" plain "%?"
+         :if-new (file+head "HumanBeing/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
+        ("m" "math" plain "%?"
+         :if-new (file+head "Math/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
+        ("n" "nutrition" plain "%?"
+         :if-new (file+head "Nutrition/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
+        ("p" "programming" plain "%?"
+         :if-new (file+head "Programming/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))))
+#+end_src
+
+Skip =org-capture-buffer=.
+
+#+begin_src emacs-lisp
+(advice-add 'org-roam-node-find :after #'org-capture-finalize)
+#+end_src
+
+Do not open backlink buffer automatically.
+
+#+begin_src emacs-lisp
+(after! org-roam
+  (setq +org-roam-open-buffer-on-find-file nil))
+#+end_src
+
+*** Hiding the Properties Drawer
+
+#+begin_src emacs-lisp
+;;;###autoload
+(defun als-org-hide-properties ()
+  "Hide all org-mode headline property drawers in buffer. Could be slow if it has a lot of overlays."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward
+            "^ *:properties:\n\\( *:.+?:.*\n\\)+ *:end:\n" nil t)
+      (let ((ov_this (make-overlay (match-beginning 0) (match-end 0))))
+        (overlay-put ov_this 'display "")
+        (overlay-put ov_this 'hidden-prop-drawer t))))
+  (put 'als-org-toggle-properties-hide-state 'state 'hidden))
+
+;;;###autoload
+(defun als-org-show-properties ()
+  "Show all org-mode property drawers hidden by org-hide-properties."
+  (interactive)
+  (remove-overlays (point-min) (point-max) 'hidden-prop-drawer t)
+  (put 'als-org-toggle-properties-hide-state 'state 'shown))
+
+;;;###autoload
+(defun als-org-toggle-properties ()
+  "Toggle visibility of property drawers."
+  (interactive)
+  (if (eq (get 'als-org-toggle-properties-hide-state 'state) 'hidden)
+      (als-org-show-properties)
+    (als-org-hide-properties)))
+
+(add-hook! 'org-roam-find-file-hook #'als-org-hide-properties)
+#+end_src
+
+*** Dailies
+
+#+begin_src emacs-lisp
+(require 'org-roam-dailies)
+(setq org-roam-dailies-directory (expand-file-name "Notizen/Diary" user-directory))
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry "* %<%H:%M>: %?"
+         :if-new (file+head "%<%Y-%m-%d>.org" "%<%Y-%m-%d>\n"))))
+#+end_src
+
+** Bibtex
+*** Custom Configurations
+Setup bibliography and pdf path.
+
+#+begin_src emacs-lisp
+(setq! citar-bibliography
+       (list (expand-file-name "Latex/references.bib" user-directory))
+       citar-library-paths
+       '("~/Dropbox/Alexey/Literature"))
+#+end_src
+
+Configure all the icons.
+
+#+begin_src emacs-lisp
+(setq citar-symbols
+  `((file . (,(all-the-icons-icon-for-file "foo.pdf" :face 'all-the-icons-dred) .
+            ,(all-the-icons-icon-for-file "foo.pdf" :face 'citar-icon-dim)))
+    (note . (,(all-the-icons-icon-for-file "foo.txt") .
+            ,(all-the-icons-icon-for-file "foo.txt" :face 'citar-icon-dim)))
+    (link .
+        (,(all-the-icons-faicon "external-link-square" :v-adjust 0.02 :face 'all-the-icons-dpurple) .
+        ,(all-the-icons-faicon "external-link-square" :v-adjust 0.02 :face 'citar-icon-dim)))))
+;; Here we define a face to dim non 'active' icons, but preserve alignment
+(defface citar-icon-dim
+    '((((background dark)) :foreground "#282c34")
+     (((background light)) :foreground "#fafafa"))
+     "Face for obscuring/dimming icons"
+     :group 'all-the-icons-faces)
+#+end_src
+
+** Org-Latex
+*** Basic Format settings
+Increase scale of displayed latex fragments depending on =big-font-mode=.
+
+#+begin_src emacs-lisp
+(defun als-refresh-latex-preview ()
+  "Refresh latex fragments in org."
+  (interactive)
+  (org-clear-latex-preview)
+  (org-latex-preview '(16)))
+
+(defun als-set-org-latex-scale (SCALE)
+  "Changes the scale of displayed latex fragments to SCALE and rebuilds all fragments."
+  (setq org-format-latex-options
+        (plist-put org-format-latex-options :scale SCALE))
+  (setq als-org-latex-scale SCALE)
+  (als-refresh-latex-preview))
+
+;; Useful constants and variables
+(defconst als-org-latex-scale-default 1.5
+  "Default scale for displayed latex fragments in org.")
+(defvar als-org-latex-scale nil
+  "Stores the scale of dislplayed latex fragments after calling `als-set-org-latex-scale'.")
+
+;; Increase slightly the deafult scale.
+(after! org
+  (als-set-org-latex-scale als-org-latex-scale-default))
+
+;; Increase scale if `doom-big-font-mode' is enabled.
+(add-hook! doom-big-font-mode
+           (if doom-big-font-mode
+               (als-set-org-latex-scale 2.5)
+             (als-set-org-latex-scale als-org-latex-scale-default)))
+#+end_src
+
+Insert some packages.
+
+#+begin_src emacs-lisp
+(after! org
+  (setq org-latex-packages-alist
+        '(("" "bbm" t)
+          ("" "mathtools" t))))
+#+end_src
+
+*** Custom functions
+Add macros to =org-format-latex-header= from =als-latex-macros-file=.
+
+#+begin_src emacs-lisp
+(setq als-latex-macros-file
+      (expand-file-name "Latex/macros.tex" user-directory))
+
+(defun als-read-file (file-path)
+  "Return FILE_PATH's content."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (buffer-string)))
+
+(defun als-update-org-latex-header ()
+  "Add custom macros of `als-latex-macros-file' to `org-format-latex-header'."
+  (interactive)
+  (custom-reevaluate-setting 'org-format-latex-header)
+  (setq org-format-latex-header
+        (concat org-format-latex-header
+                (als-read-file als-latex-macros-file))))
+
+(after! org
+  (als-update-org-latex-header))
+#+end_src
+
+Add macros interactively.
+
+#+begin_src emacs-lisp
+(defun als-add-latex-macro (macro latex-snippet &optional args)
+  "Define for LATEX-SNIPPET a MACRO. Add it to custom macro file.
+Adding a number with `\\[universal-argument]' inserts ARGS for the macro."
+  (interactive "sMacro: \nsLatex Snippet: \nP")
+  (let (latex-code)
+    (setq latex-code (concat "\n\\newcommand{" macro "}"))
+    (when args
+      (setq latex-code (concat latex-code "[" (number-to-string args) "]")))
+    (setq latex-code (concat latex-code "{" latex-snippet "}"))
+    (write-region latex-code nil als-latex-macros-file 'append))
+  (als-update-org-latex-header))
+
+(defun als-add-latex-operator (operator operand-name &optional args)
+  "Define for OPERAND-NAME a mathematical OPERATOR. Add it to custom macro file.
+Adding a number with `\\[universal-argument]' inserts ARGS for the macro."
+  (interactive "sMacro: \nsOperand Name: \nP")
+  (let (latex-code)
+    (setq latex-code (concat "\n\\DeclareMathOperator{" operator "}"))
+    (when args
+      (setq latex-code (concat latex-code "[" (number-to-string args) "]")))
+    (setq latex-code (concat latex-code "{" operand-name "}"))
+    (write-region latex-code nil als-latex-macros-file 'append))
+  (als-update-org-latex-header))
+#+end_src
+
+*** Bindings
+
+#+begin_src emacs-lisp
+(map! :leader :prefix ("l" . "latex")
+      "m" #'als-add-latex-macro
+      "o" #'als-add-latex-operator
+      "u" #'als-update-org-latex-header)
+(map! :map org-mode-map :localleader
+      "L" #'org-latex-preview)
+#+end_src
+
+** Presentations with =org-tree-slide=
+*** Fixes
+Add some custom configurations. Remove some default settings made by doom.
+
+#+begin_src emacs-lisp
+(after! org-tree-slide
+  (advice-remove 'org-tree-slide--display-tree-with-narrow
+                 #'+org-present--hide-first-heading-maybe-a))
+#+end_src
+
+Entering =org-tree-slide-mode= disables the emphasis markers hiding. Fix it.
+
+#+begin_src emacs-lisp
+(add-hook! 'org-tree-slide-mode-hook (setq org-hide-emphasis-markers t))
+#+end_src
+
+*** Hiding
+Add a function for toggling cursor
+
+#+begin_src emacs-lisp
+(defvar cursor-state t
+  "Contains if the cursor is shown or not.")
+
+(defun als-hide-cursor ()
+  (setq evil-normal-state-cursor nil)
+  (setq cursor-type nil)
+  (hl-line-mode 0)
+  (setq cursor-state nil))
+
+(defun als-show-cursor ()
+  (setq evil-normal-state-cursor 'box)
+  (hl-line-mode 1)
+  (setq cursor-state t))
+
+(defun als-toggle-cursor ()
+  "Toggles visibility of the cursor."
+  (interactive)
+  (if cursor-state
+      (als-hide-cursor)
+    (als-show-cursor)))
+
+#+end_src
+
+
+Disable line numbers after running =org-tree-slide-mode=.
+
+#+begin_src emacs-lisp
+(add-hook! 'org-tree-slide-play-hook
+           ;; Disable line numbers
+           #'doom-disable-line-numbers-h
+           ;; hide cursor
+           (als-hide-cursor)
+           ;; Disable flyspell
+           (flyspell-mode-off))
+#+end_src
+
+Changing =org-ellipsis= needs restarting =org-mode= and this breaks =org-tree-slide=.
+Therefore, add an advice such that =org= is restarted before setup
+=org-tree-slide-mode=.
+
+#+begin_src emacs-lisp
+(defun als-no-org-ellipsis (&rest r)
+  (unless org-tree-slide-mode
+      (setq org-ellipsis " ")
+      (org-mode-restart)))
+
+(advice-add 'org-tree-slide-mode :before #'als-no-org-ellipsis)
+#+end_src
+
+Reset changes after exiting =org-tree-slide=.
+
+#+begin_src emacs-lisp
+(add-hook! 'org-tree-slide-stop-hook #'doom-enable-line-numbers-h
+  (setq org-ellipsis " ▼")
+  (als-show-cursor)
+  (org-mode-restart)
+  (flyspell-mode-on))
+#+end_src
+
+*** Presenter Settings
+Jump to the next or previous slide using the presenter if scrolling of the
+current one is not possible.
+
+#+begin_src emacs-lisp
+(defun als-org-tree-slide-next ()
+  (interactive)
+  (condition-case nil
+      (scroll-up-command)
+    (error (org-tree-slide-move-next-tree))))
+
+(defun als-org-tree-slide-previous ()
+  (interactive)
+  (condition-case nil
+      (scroll-down-command)
+    (error (org-tree-slide-move-previous-tree))))
+#+end_src
+
+*** Handle latex fragments
+Increase size of latex fragments entering =org-tree-slide= and decrease it after exiting.
+
+#+begin_src emacs-lisp
+(defvar-local als-org-tree-slide-latex-scale-factor 2.5
+  "Factor used for scaling of latex fragments in org-tree-slide.")
+
+(add-hook! 'org-tree-slide-play-hook
+  (als-set-org-latex-scale
+   (* als-org-latex-scale als-org-tree-slide-latex-scale-factor)))
+
+(add-hook! 'org-tree-slide-stop-hook
+  (als-set-org-latex-scale
+   (/ als-org-latex-scale als-org-tree-slide-latex-scale-factor)))
+#+end_src
+
+*** Bindings
+
+#+begin_src emacs-lisp
+(after! org-tree-slide
+  (map! :map org-tree-slide-mode-map
+        "<next>"        #'als-org-tree-slide-next
+        "<prior>"       #'als-org-tree-slide-previous))
+
+(map! :map org-mode-map
+      "<f5>"          #'org-tree-slide-mode)
+#+end_src
+
+** Animate gifs
+Makes GIFs animated. Simply add the desired GIF as an inline image in
+your org file. The following code snippets is copied from [[https://ivanaf.com/animating_gifs_in_orgmode.html][here]].
+
+#+begin_src emacs-lisp
+(defun org-inline-image--get-current-image ()
+  "Return the overlay associated with the image under point."
+  (car (--select (eq (overlay-get it 'org-image-overlay) t) (overlays-at (point)))))
+
+(defun org-inline-image--get (prop)
+  "Return the value of property PROP for image under point."
+  (let ((image (org-inline-image--get-current-image)))
+    (when image
+      (overlay-get image prop))))
+
+(defun org-inline-image-animate ()
+  "Animate the image if it's possible."
+  (interactive)
+  (let ((image-props (org-inline-image--get 'display)))
+    (when (image-multi-frame-p image-props)
+      (image-animate image-props))))
+
+(defun org-inline-image-animate-auto ()
+  (interactive)
+  (when (eq 'org-mode major-mode)
+    (while-no-input
+      (run-with-idle-timer 0.3 nil 'org-inline-image-animate))))
+
+(setq org-inline-image--get-current-image (byte-compile 'org-inline-image--get-current-image))
+(setq org-inline-image-animate  (byte-compile 'org-inline-image-animate ))
+(add-hook 'post-command-hook 'org-inline-image-animate-auto)
+#+end_src
+
+* Mails with =mu4e=
+How to install =mu4e= from source can be found [[https://www.djcbsoftware.nl/code/mu/mu4e/Installation.html][here]]. I use the =release/1.6= branch.
+First, basic settings.
+
+#+begin_src emacs-lisp
+;; if I installed mu using my package manager
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+;; if I built from source
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
+
+(set-email-account! "math.tu-dortmund"
+    '((mu4e-sent-folder       . "/Sent")
+      (mu4e-drafts-folder     . "/Drafts")
+      (mu4e-trash-folder      . "/Trash")
+      (mu4e-refile-folder     . "/All Mail")
+      (smtpmail-smtp-user     . "aschwar2")
+      (smtpmail-smtp-server   . "smtp.mathematik.tu-dortmund.de")
+      (smtpmail-smtp-service  . 587)
+      (smtpmail-stream-type   . starttls)
+      (mu4e-compose-signature . "---\nAlexey Schwarzmann"))
+  t)
+
+(after! mu4e
+  (custom-reevaluate-setting 'mu4e-bookmarks)
+  (setq mu4e-compose-dont-reply-to-self t))
+#+end_src
+
+Set shortcuts.
+
+#+begin_src emacs-lisp
+(after! mu4e
+  (setq mu4e-maildir-shortcuts
+        '(("/Inbox"     . ?i)
+          ("/Sent"      . ?s)
+          ("/Drafts"    . ?d)
+          ("/Trash"     . ?t))))
+#+end_src
+
+Run =mu4e= in the background and update every 30 minutes.
+
+#+begin_src emacs-lisp
+(after! mu4e
+  (setq mu4e-update-interval (* 60 30)))
+
+(when (featurep! :email mu4e)
+  (mu4e t))
+#+end_src
+
+Bindings.
+
+#+begin_src emacs-lisp
+(after! mu4e
+  (defun als-go-to-inbox ()
+    (interactive)
+    (mu4e-headers-search "maildir:/Inbox"))
+
+  (map! :leader
+        :prefix ("#" . "mail")
+        "c" #'mu4e-compose-new
+        "i" #'als-go-to-inbox
+        "#" #'mu4e
+        :desc "mu4e sync" "s" #'mu4e-update-mail-and-index))
+#+end_src
+
+* Spelling
+Setup default language and change dictionary before correction. Also disable it
+by default.
+
+#+begin_src emacs-lisp
+(setq ispell-dictionary "en")
+#+end_src
+
+** Location of personal dictionary
+Disable doom spell directory.
+
+#+begin_src emacs-lisp
+(after! ispell
+  (setq! ispell-personal-dictionary nil))
+#+end_src
+
+** Switch between languages
+Add a function for switching between languages.
+
+#+begin_src emacs-lisp
+(setq als-german "de_DE"
+      als-english "en")
+
+(defun als-switch-language ()
+  "Swiches between german and english dictionary."
+  (interactive)
+  (if ispell-local-dictionary
+      (if (equal ispell-local-dictionary als-german)
+          (ispell-change-dictionary als-english)
+        (ispell-change-dictionary als-german))
+    (ispell-change-dictionary als-german)))
+
+(defun als-set-german-dictionary ()
+  (interactive)
+  (ispell-change-dictionary als-german))
+#+end_src
+
+** Default languages setup
+
+#+begin_src emacs-lisp
+(after! org-msg
+    (add-hook! 'org-msg-edit-mode-hook #'als-set-german-dictionary))
+#+end_src
+
+** Bindings
+
+#+begin_src emacs-lisp
+(map! :leader
+      :prefix ("e" . "error")
+      "h" #'+spell/previous-error
+      "l" #'+spell/next-error
+      "t" #'als-switch-language
+      "w" #'+spell/add-word)
+#+end_src
+
+* Translating
+I use Google-Translator for translating stuff.
+
+#+BEGIN_SRC emacs-lisp
+;; Following package is needed by google-translate
+(use-package! popup)
+
+(use-package! google-translate
+  :after popup
+  :functions (google-translate--search-tkk)
+  :custom
+  (google-translate-default-source-language "en")
+  (google-translate-default-target-language "de")
+  :config
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
+
+;; Key Bindings
+(map! :leader
+      :prefix ("sg" . "Google Translate")
+      :desc "translate at point" "p" #'google-translate-at-point
+      :desc "translate english word" "e" #'google-translate-query-translate
+      :desc "translate german word" "g" #'google-translate-query-translate-reverse
+      :desc "translate german word" "d" #'google-translate-query-translate-reverse)
+#+END_SRC
+
+* Snippets with =yasnippet=
+Enable latex snippets in org buffers.
+
+#+begin_src emacs-lisp
+(defun als-org-latex-yas ()
+  "Activate org and LaTeX yas expansion in org-mode buffers."
+  (yas-minor-mode)
+  (yas-activate-extra-mode 'latex-mode))
+
+(add-hook! org-mode #'als-org-latex-yas)
+#+end_src
+
+Increase the delay time of company.
+
+#+begin_src emacs-lisp
+(after! company
+  (setq company-idle-delay 1))
+#+end_src
+
+Add my snippets directory...
+
+#+begin_src emacs-lisp
+(after! yasnippet
+  (setq +snippets-dir
+        (expand-file-name "Snippets" user-directory))
+  (yas-reload-all))
+#+end_src
+
+and some bindings.
+
+#+begin_src emacs-lisp
+(map! :leader :prefix ("y" . "yasnippet")
+      "d" #'yas-describe-tables
+      "n" #'yas-new-snippet
+      "v" #'yas-visit-snippet-file)
+#+end_src
+
+* Programming with =lsp=
+Change some settings for lsp.
+
+#+begin_src emacs-lisp
+(after! lsp-ui
+  (setq lsp-ui-doc-position 'top
+        lsp-ui-sideline-show-diagnostics nil))
+#+end_src
+
+** CC
+Settings for =C=-Language support.
+
+#+begin_src emacs-lisp
+(setq lsp-clients-clangd-args '("-j=3"
+                                "--background-index"
+                                "--clang-tidy"
+                                "--completion-style=detailed"
+                                "--header-insertion=never"
+                                "--header-insertion-decorators=0"))
+(after! lsp-clangd (set-lsp-priority! 'clangd 2))
+#+end_src
+
+* Useful hacks
+** Comment box
+Draw a comment box around a region with the full width.
+
+#+begin_src emacs-lisp
+(defun als-comment-box (b e)
+"Draw a box comment around the region but arrange for the region to extend to at least the fill column. Place the point after the comment box."
+
+(interactive "r")
+
+(let ((e (copy-marker e t)))
+  (goto-char b)
+  (end-of-line)
+  (insert-char ?  (- fill-column (current-column)))
+  (comment-box b e 1)
+  (goto-char e)
+  (set-marker e nil)))
+
+(map! "M-;" #'als-comment-box)
+#+end_src

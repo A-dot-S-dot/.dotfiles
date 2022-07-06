@@ -1,0 +1,21 @@
+# Settings for mail
+IMAPStore math.tu-dortmund-remote
+Host smtp.mathematik.tu-dortmund.de
+User aschwar2
+PassCmd "pass mail"
+SSLType IMAPS
+
+# Define where mail will be stored
+MaildirStore math.tu-dortmund-local
+Path ~/.mail/
+Inbox ~/.mail/Inbox
+SubFolders Verbatim
+
+# Connect the remote and the local maildir
+Channel math.tu-dortmund
+Far :math.tu-dortmund-remote:
+Near :math.tu-dortmund-local:
+Patterns * !spam !.*
+Expunge Both
+Create Both
+SyncState *
