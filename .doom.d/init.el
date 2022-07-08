@@ -55,7 +55,7 @@
        emacs-lisp
        latex
        (markdown +grip)
-       (org +pretty +roam2)
+       (org +pretty +roam2 +dragndrop)
        (python +lsp +pyright)
 
        :config
