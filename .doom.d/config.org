@@ -54,6 +54,7 @@ theme which is also inspired by atom.
 (setq doom-font (font-spec :family "Fira Mono" :size 18)
       doom-variable-pitch-font (font-spec :family "Iosevka Aile" :weight 'light))
 (setq doom-theme 'doom-solarized-light)
+(custom-set-faces! '(fixed-pitch :font "JetBrains Mono" :weight light))
 (setq second-theme 'doom-one)
 #+end_src
 
@@ -276,7 +277,9 @@ Also want to ensure that frame is splitted horizontally.
 #+end_src
 
 ** Display preferences
-Use bullet characters instead of asterisks, plus set the header font sizes to something more palatable.
+Use bullet characters instead of asterisks, plus set the header font sizes to
+something more palatable. The following configuration is highly inspired by this
+[[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][blogpost]].
 
 #+BEGIN_SRC emacs-lisp
 (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○"))
@@ -290,6 +293,23 @@ Use bullet characters instead of asterisks, plus set the header font sizes to so
   '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
   '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
   '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1))
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(custom-set-faces!
+  '(org-block :foreground nil :inherit fixed-pitch)
+  '(org-table :inherit fixed-pitch)
+  '(org-formula :inherit fixed-pitch)
+  '(org-code :inherit (shadow fixed-pitch))
+  '(org-indent :inherit (org-hide fixed-pitch))
+  '(org-verbatim :inherit (shadow fixed-pitch))
+  '(org-special-keyword :inherit (font-lock-comment-face fixed-pitch))
+  '(org-meta-line :inherit (font-lock-comment-face fixed-pitch))
+  '(org-checkbox :inherit fixed-pitch))
+
+;; Get rid of the background on column views
+(custom-set-faces!
+  '(org-column :background nil)
+  '(org-column-title :background nil))
 #+END_SRC
 
 Hide emphasis markers and setup ellipsis.
