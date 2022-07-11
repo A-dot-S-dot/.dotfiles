@@ -1054,18 +1054,22 @@ Add a function for switching between languages.
 (setq als-german "de_DE"
       als-english "en")
 
-(defun als-switch-language ()
+(defun als-set-german-dictionary ()
+  (interactive)
+  (ispell-change-dictionary als-german))
+
+(defun als-set-english-dictionary ()
+  (interactive)
+  (ispell-change-dictionary als-english))
+
+(defun als-switch-dictionary ()
   "Swiches between german and english dictionary."
   (interactive)
   (if ispell-local-dictionary
       (if (equal ispell-local-dictionary als-german)
-          (ispell-change-dictionary als-english)
-        (ispell-change-dictionary als-german))
-    (ispell-change-dictionary als-german)))
-
-(defun als-set-german-dictionary ()
-  (interactive)
-  (ispell-change-dictionary als-german))
+          (als-set-english-dictionary)
+        (als-set-german-dictionary))
+    (als-set-german-dictionary)))
 #+end_src
 
 ** Default languages setup
@@ -1082,7 +1086,7 @@ Add a function for switching between languages.
       :prefix ("e" . "error")
       "h" #'+spell/previous-error
       "l" #'+spell/next-error
-      "t" #'als-switch-language
+      "s" #'als-switch-dictionary
       "w" #'+spell/add-word)
 #+end_src
 
