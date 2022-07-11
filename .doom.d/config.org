@@ -1025,6 +1025,13 @@ Set shortcuts.
           ("/Trash"     . ?t))))
 #+end_src
 
+Do not show related messages in header view.
+
+#+begin_src emacs-lisp
+(after! mu4e
+  (setq mu4e-headers-include-related nil))
+#+end_src
+
 Run =mu4e= in the background and update every 30 minutes.
 
 #+begin_src emacs-lisp
