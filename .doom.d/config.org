@@ -1206,18 +1206,16 @@ Settings for =C=-Language support.
 Draw a comment box around a region with the full width.
 
 #+begin_src emacs-lisp
-(defun als-comment-box (b e)
-"Draw a box comment around the region but arrange for the region to extend to at least the fill column. Place the point after the comment box."
-
-(interactive "r")
-
-(let ((e (copy-marker e t)))
-  (goto-char b)
-  (end-of-line)
-  (insert-char ?  (- fill-column (current-column)))
-  (comment-box b e 1)
-  (goto-char e)
-  (set-marker e nil)))
+(defun als-comment-box (start end)
+  "Draw a box comment around START to END, but arrange for the region to extend to at least the fill column. Place the point after the comment box."
+  (interactive "r")
+  (let ((end (copy-marker end t)))
+    (goto-char start)
+    (end-of-line)
+    (insert-char ?  (- fill-column (current-column)))
+    (comment-box start end 1)
+    (goto-char end)
+    (set-marker end nil)))
 
 (map! "M-;" #'als-comment-box)
 #+end_src
