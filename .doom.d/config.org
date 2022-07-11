@@ -1005,8 +1005,7 @@ First, basic settings.
       (smtpmail-smtp-user     . "aschwar2")
       (smtpmail-smtp-server   . "smtp.mathematik.tu-dortmund.de")
       (smtpmail-smtp-service  . 587)
-      (smtpmail-stream-type   . starttls)
-      (mu4e-compose-signature . "---\nAlexey Schwarzmann"))
+      (smtpmail-stream-type   . starttls))
   t)
 
 (after! mu4e
