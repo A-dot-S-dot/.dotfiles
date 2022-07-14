@@ -697,9 +697,14 @@ Setup bibliography and pdf path.
 
 #+begin_src emacs-lisp
 (setq! citar-bibliography
-       (list (expand-file-name "Latex/references.bib" user-directory))
+       (list (expand-file-name "Literature/Books/references.bib" user-directory)
+             (expand-file-name "Literature/Articles/references.bib" user-directory)
+             (expand-file-name "Literature/Lectures/references.bib" user-directory)
+             (expand-file-name "Literature/other.bib" user-directory))
        citar-library-paths
-       '("~/Dropbox/Alexey/Literature"))
+       (list (expand-file-name "Literature/Books" user-directory)
+             (expand-file-name "Literature/Articles" user-directory)
+             (expand-file-name "Literature/Lectures" user-directory)))
 #+end_src
 
 Configure all the icons.
