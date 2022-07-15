@@ -625,21 +625,16 @@ Default settings.
 Set =org-roam-directory=.
 
 #+begin_src emacs-lisp
-(setq org-roam-directory (expand-file-name "Notizen" user-directory))
+(setq org-roam-directory (expand-file-name "Notizen/Zettelkasten" user-directory))
 #+end_src
 
 Just use only the id for filenames.
 
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
-      '(("h" "human being" plain "%?"
-         :if-new (file+head "HumanBeing/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
-        ("m" "math" plain "%?"
-         :if-new (file+head "Math/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
-        ("n" "nutrition" plain "%?"
-         :if-new (file+head "Nutrition/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))
-        ("p" "programming" plain "%?"
-         :if-new (file+head "Programming/%<%Y%m%d%H%M%S>.org" "#+title: ${title}"))))
+      '(("d" "default" plain "%?" :target
+  (file+head "%<%Y%m%d%H%M%S>.org" "#+title: ${title}\n")
+  :unnarrowed t)))
 #+end_src
 
 Skip =org-capture-buffer=.
