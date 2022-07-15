@@ -18,6 +18,7 @@
        nav-flash
        indent-guides
        (treemacs +lsp)
+       workspaces
 
        :editor
        (evil +everywhere)

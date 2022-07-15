@@ -262,11 +262,19 @@ Prefer to reuse existing windows, especially those showing a buffer of the same 
          display-buffer-in-previous-window)))
 #+end_src
 
-
 Also want to ensure that frame is splitted horizontally.
 
 #+begin_src emacs-lisp
 (setq split-width-threshold 100)
+#+end_src
+
+* Workspaces Management
+Change some default keybindings.
+
+#+begin_src emacs-lisp
+(map! :leader :prefix "TAB"
+      "h" #'+workspace/switch-left
+      "l" #'+workspace/switch-right)
 #+end_src
 
 * Org
