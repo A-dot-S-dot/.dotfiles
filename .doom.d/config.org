@@ -74,7 +74,7 @@ Toggle light theme via binding.
       :desc "toggle light theme" "tl" #'als-toggle-light-theme)
 #+end_src
 
-** Transperency
+** Transparency
 Add a function for toggling transparency.
 
 #+begin_src emacs-lisp
