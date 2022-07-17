@@ -1120,8 +1120,9 @@ Add a function for switching between languages.
       :prefix ("e" . "error")
       "h" #'+spell/previous-error
       "l" #'+spell/next-error
-      "s" #'als-switch-dictionary
-      "w" #'+spell/add-word)
+      "w" #'+spell/add-word
+      :prefix "t"
+      "S" #'als-switch-dictionary)
 #+end_src
 
 * Translating
