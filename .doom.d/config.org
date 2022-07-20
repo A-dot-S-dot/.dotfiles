@@ -55,7 +55,6 @@ theme which is also inspired by atom.
       doom-variable-pitch-font (font-spec :family "Iosevka Aile" :weight 'light))
 (setq doom-theme 'doom-one)
 (custom-set-faces! '(fixed-pitch :font "JetBrains Mono" :weight light))
-(setq second-theme 'doom-one)
 #+end_src
 
 Toggle light theme via binding.
@@ -64,9 +63,12 @@ Toggle light theme via binding.
 (defun als-toggle-light-theme ()
   "Toggles `doom-one-light` if `doom-one` is active and vice versa."
   (interactive)
-  (if (equal doom-theme second-theme)
-      (load-theme 'doom-solarized-light)
-    (load-theme second-theme))
+  (if (equal doom-theme 'doom-one)
+      (progn
+        (load-theme 'doom-solarized-light)
+        (als-org-colors-solarized-light))
+    (load-theme 'doom-one)
+    (als-org-colors-doom-one))
   (als-refresh-latex-preview))
 
 (map! :leader
@@ -291,21 +293,42 @@ something more palatable. The following configuration is highly inspired by this
 
 #+BEGIN_SRC emacs-lisp
 (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○"))
-(custom-set-faces! '(org-document-title :font "Iosevka Aile" :weight bold :height 1.3))
-(custom-set-faces!
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.2)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.05)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.0)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1)
-  '(org-level-1 :font "Iosevka Aile" :weight medium :height 1.1))
+(custom-set-faces! (list 'org-document-title :font doom-variable-pitch-font :weight 'ultra-bold :height 1.5))
+
+(defun als-org-colors-doom-one ()
+  "Enable Doom One colors for Org headers."
+  (interactive)
+  (dolist
+      (face
+       '((org-level-1 1.2 "#51afef" extra-bold)
+         (org-level-2 1.1 "#c678dd" bold)
+         (org-level-3 1.05 "#98be65" medium)
+         (org-level-4 1.0 "#da8548" medium)
+         (org-level-5 1.1 "#5699af" medium)
+         (org-level-6 1.1 "#a9a1e1" medium)
+         (org-level-7 1.1 "#46d9ff" medium)
+         (org-level-8 1.1 "#ff6c6b" medium)))
+    (set-face-attribute (nth 0 face) nil :font doom-variable-pitch-font :weight (nth 3 face) :height (nth 1 face) :foreground (nth 2 face))))
+
+(defun als-org-colors-solarized-light ()
+  "Enable Solarized Light colors for Org headers."
+  (interactive)
+  (dolist
+      (face
+       '((org-level-1 1.2 "#268bd2" extra-bold)
+         (org-level-2 1.1 "#d33682" bold)
+         (org-level-3 1.05 "#859900" medium)
+         (org-level-4 1.0 "#b58900" medium)
+         (org-level-5 1.1 "#cb4b16" medium)
+         (org-level-6 1.1 "#6c71c4" medium)
+         (org-level-7 1.1 "#2aa198" medium)
+         (org-level-8 1.1 "#657b83" medium)))
+    (set-face-attribute (nth 0 face) nil :font doom-variable-pitch-font :weight (nth 3 face) :height (nth 1 face) :foreground (nth 2 face))))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 (custom-set-faces!
   '(org-block :foreground nil :inherit fixed-pitch)
-  '(org-table :inherit fixed-pitch)
+  '(org-table :inherit fixed-pitch :foreground "#bfafdf")
   '(org-formula :inherit fixed-pitch)
   '(org-code :inherit (shadow fixed-pitch))
   '(org-indent :inherit (org-hide fixed-pitch))
@@ -318,6 +341,10 @@ something more palatable. The following configuration is highly inspired by this
 (custom-set-faces!
   '(org-column :background nil)
   '(org-column-title :background nil))
+
+;; Load theme related faces
+(after! org
+  (als-org-colors-doom-one))
 #+END_SRC
 
 Hide emphasis markers and setup ellipsis.
