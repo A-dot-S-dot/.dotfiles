@@ -293,7 +293,7 @@ something more palatable. The following configuration is highly inspired by this
 
 #+BEGIN_SRC emacs-lisp
 (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○"))
-(custom-set-faces! (list 'org-document-title :font doom-variable-pitch-font :weight 'ultra-bold :height 1.5))
+(custom-set-faces! '(org-document-title :font "Iosevka Aile"  :weight ultra-bold :height 1.5))
 
 (defun als-org-colors-doom-one ()
   "Enable Doom One colors for Org headers."
