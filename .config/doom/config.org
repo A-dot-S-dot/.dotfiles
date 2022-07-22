@@ -30,6 +30,7 @@
   - [[#org-latex][Org-Latex]]
   - [[#presentations-with-org-tree-slide][Presentations with =org-tree-slide=]]
   - [[#animate-gifs][Animate gifs]]
+  - [[#org-auto-tangle][Org-auto-tangle]]
 - [[#mails-with-mu4e][Mails with =mu4e=]]
 - [[#spelling][Spelling]]
   - [[#location-of-personal-dictionary][Location of personal dictionary]]
@@ -1065,6 +1066,17 @@ your org file. The following code snippets is copied from [[https://ivanaf.com/a
 (setq org-inline-image--get-current-image (byte-compile 'org-inline-image--get-current-image))
 (setq org-inline-image-animate  (byte-compile 'org-inline-image-animate ))
 (add-hook 'post-command-hook 'org-inline-image-animate-auto)
+#+end_src
+** Org-auto-tangle
+=org-auto-tangle= allows you to add the option =#+auto_tangle: t= in your Org file
+so that it automatically tangles when you save the document.
+
+#+begin_src emacs-lisp
+(use-package! org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t))
 #+end_src
 
 * Mails with =mu4e=
