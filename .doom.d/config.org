@@ -98,6 +98,8 @@ theme which is also inspired by atom.
       doom-variable-pitch-font (font-spec :family "Iosevka Aile" :weight 'light))
 (setq doom-theme 'doom-one)
 (custom-set-faces! '(fixed-pitch :font "JetBrains Mono" :weight light))
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic))
 #+end_src
 
 Toggle light theme via binding.
