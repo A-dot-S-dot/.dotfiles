@@ -40,7 +40,6 @@
 - [[#snippets-with-yasnippet][Snippets with =yasnippet=]]
 - [[#programming-with-lsp][Programming with =lsp=]]
   - [[#cc][CC]]
-  - [[#haskell][Haskell]]
 - [[#useful-hacks][Useful hacks]]
   - [[#comment-box][Comment box]]
 
@@ -1280,14 +1279,6 @@ Settings for =C=-Language support.
                                 "--header-insertion=never"
                                 "--header-insertion-decorators=0"))
 (after! lsp-clangd (set-lsp-priority! 'clangd 2))
-#+end_src
-
-** Haskell
-Configure =lsp= to use my preferred formatting provider.
-
-#+begin_src emacs-lisp
-(after! lsp
-  (setq lsp-haskell-formatting-provider "stylish-haskell"))
 #+end_src
 
 * Useful hacks
