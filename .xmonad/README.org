@@ -1,10 +1,46 @@
+#+title: XMonad Config
+#+author: Alexey Schwarzmann
+#+property: header-args:haskell :tangle xmonad.hs
+
+* Table of Contents :toc:
+- [[#about-this-config][About This Config]]
+- [[#imports][Imports]]
+  - [[#base][Base]]
+  - [[#data][Data]]
+- [[#variables][Variables]]
+- [[#autostart][Autostart]]
+- [[#layouts][Layouts]]
+- [[#workspaces][Workspaces]]
+- [[#managehook][Managehook]]
+- [[#keybindings][Keybindings]]
+- [[#main][Main]]
+- [[#help][Help]]
+
+* About This Config
+XMonad is a dynamically tiling X11 window manager that is written and configured
+in Haskell. This config is inspired by [[https://gitlab.com/dwt1/dotfiles/-/tree/master/.xmonad][Derek Tylers Config]].
+
+* Imports
+** Base
+
+#+begin_src haskell
 import XMonad
 import System.Exit
 import qualified XMonad.StackSet as W
+#+end_src
 
+** Data
+
+#+begin_src haskell
 import Data.Monoid
 import qualified Data.Map        as M
+#+end_src
 
+* Variables
+It’s nice to assign values to stuff that I will use more than once in the
+config.
+
+#+begin_src haskell
 myModMask :: KeyMask
 myModMask = mod4Mask
 
@@ -19,10 +55,19 @@ myClickJustFocuses = False
 
 myBorderWidth :: Dimension
 myBorderWidth = 2
+#+end_src
 
+* Autostart
+These are commands I want XMonad to execute on startup.
+
+#+begin_src haskell
 myStartupHook :: X ()
 myStartupHook = return ()
+#+end_src
 
+* Layouts
+
+#+begin_src haskell
 myLayout = tiled ||| Mirror tiled ||| Full
   where
      -- default tiling algorithm partitions the screen into two panes
@@ -36,15 +81,30 @@ myLayout = tiled ||| Mirror tiled ||| Full
 
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
+#+end_src
 
+* Workspaces
+
+#+begin_src haskell
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+#+end_src
+* Managehook
+Sets some rules for certain programs. Examples include forcing certain programs
+to always float, or to always appear on a certain workspace. Forcing programs to
+a clickable workspace with a doShift requires =xdotool=. To get className or
+title of the program I use =xprop=.
 
+#+begin_src haskell
 myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
+#+end_src
 
+* Keybindings
+
+#+begin_src haskell
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch a terminal
@@ -155,6 +215,12 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
+
+#+end_src
+
+* Main
+
+#+begin_src haskell
 myNormalBorderColor  = "#dddddd"
 myFocusedBorderColor = "#ff0000"
 main = xmonad defaults
@@ -189,7 +255,12 @@ defaults = def {
     }
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
+#+end_src
 
+* Help
+A help string.
+
+#+begin_src haskell
 help :: String
 help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "",
@@ -239,3 +310,4 @@ help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "mod-button1  Set the window to floating mode and move by dragging",
     "mod-button2  Raise the window to the top of the stack",
     "mod-button3  Set the window to floating mode and resize by dragging"]
+#+end_src
