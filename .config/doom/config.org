@@ -1268,7 +1268,7 @@ and some bindings.
 (map! :leader :prefix ("y" . "yasnippet")
       "d" #'yas-describe-tables
       "n" #'yas-new-snippet
-      "v" #'yas-visit-snippet-file)
+      "v" #'yas/visit-snippet-file)
 #+end_src
 
 * Programming with =lsp=
