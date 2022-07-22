@@ -58,6 +58,7 @@
        (markdown +grip)
        (org +pretty +roam2 +dragndrop)
        (python +lsp +pyright)
+       (haskell +lsp)
 
        :config
        literate
