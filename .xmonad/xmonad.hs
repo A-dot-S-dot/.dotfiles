@@ -159,12 +159,6 @@ myNormalBorderColor  = "#dddddd"
 myFocusedBorderColor = "#ff0000"
 main = xmonad defaults
 
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
 defaults = def {
       -- simple stuff
         terminal           = myTerminal,
@@ -187,8 +181,6 @@ defaults = def {
         logHook            = myLogHook,
         startupHook        = myStartupHook
     }
-
--- | Finally, a copy of the default bindings in simple textual tabular format.
 
 help :: String
 help = unlines ["The default modifier key is 'alt'. Default keybindings:",
