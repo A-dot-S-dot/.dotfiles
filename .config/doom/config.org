@@ -1102,7 +1102,8 @@ First, basic settings.
 
 (after! mu4e
   (custom-reevaluate-setting 'mu4e-bookmarks)
-  (setq mu4e-compose-dont-reply-to-self t))
+  (setq mu4e-compose-dont-reply-to-self t
+        mu4e-get-mail-command "mbsync -a -c ~/.config/mu4e/mbsyncrc"))
 #+end_src
 
 Set shortcuts.
