@@ -5,8 +5,6 @@
 * Table of Contents :toc:
 - [[#about-this-config][About This Config]]
 - [[#imports][Imports]]
-  - [[#base][Base]]
-  - [[#data][Data]]
 - [[#variables][Variables]]
 - [[#autostart][Autostart]]
 - [[#layouts][Layouts]]
@@ -21,19 +19,24 @@ XMonad is a dynamically tiling X11 window manager that is written and configured
 in Haskell. This config is inspired by [[https://gitlab.com/dwt1/dotfiles/-/tree/master/.xmonad][Derek Tylers Config]].
 
 * Imports
-** Base
+These are Haskell modules that I must import so that I can use their functions later in the config.
 
 #+begin_src haskell
+-- Base
 import XMonad
 import System.Exit
 import qualified XMonad.StackSet as W
-#+end_src
 
-** Data
-
-#+begin_src haskell
+-- Data
 import Data.Monoid
 import qualified Data.Map        as M
+
+-- Hooks
+import XMonad.Hooks.ManageDocks
+
+-- Utilities
+import XMonad.Util.Run
+import XMonad.Util.SpawnOnce
 #+end_src
 
 * Variables
@@ -62,13 +65,15 @@ These are commands I want XMonad to execute on startup.
 
 #+begin_src haskell
 myStartupHook :: X ()
-myStartupHook = return ()
+myStartupHook = do
+  spawnOnce "nitrogen --restore &"
+  spawnOnce "picom &"
 #+end_src
 
 * Layouts
 
 #+begin_src haskell
-myLayout = tiled ||| Mirror tiled ||| Full
+myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -92,7 +97,7 @@ myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 * Managehook
 Sets some rules for certain programs. Examples include forcing certain programs
 to always float, or to always appear on a certain workspace. Forcing programs to
-a clickable workspace with a doShift requires =xdotool=. To get className or
+a clickable workspace with a =doShift= requires =xdotool=. To get class name or
 title of the program I use =xprop=.
 
 #+begin_src haskell
@@ -100,7 +105,7 @@ myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore]
 #+end_src
 
 * Keybindings
@@ -224,29 +229,31 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 #+begin_src haskell
 myNormalBorderColor  = "#dddddd"
 myFocusedBorderColor = "#ff0000"
-main = xmonad defaults
 
-defaults = def {
-      -- simple stuff
-        terminal           = myTerminal,
-        focusFollowsMouse  = myFocusFollowsMouse,
-        clickJustFocuses   = myClickJustFocuses,
-        borderWidth        = myBorderWidth,
-        modMask            = myModMask,
-        workspaces         = myWorkspaces,
-        normalBorderColor  = myNormalBorderColor,
-        focusedBorderColor = myFocusedBorderColor,
+main :: IO ()
+main = do
+  xmproc2 <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobarrc"
+  xmonad $ docks $ def {
+    manageHook         = myManageHook <+> manageDocks,
+    -- simple stuff
+    terminal           = myTerminal,
+    focusFollowsMouse  = myFocusFollowsMouse,
+    clickJustFocuses   = myClickJustFocuses,
+    borderWidth        = myBorderWidth,
+    modMask            = myModMask,
+    workspaces         = myWorkspaces,
+    normalBorderColor  = myNormalBorderColor,
+    focusedBorderColor = myFocusedBorderColor,
 
-      -- key bindings
-        keys               = myKeys,
-        mouseBindings      = myMouseBindings,
+    -- key bindings
+    keys               = myKeys,
+    mouseBindings      = myMouseBindings,
 
-      -- hooks, layouts
-        layoutHook         = myLayout,
-        manageHook         = myManageHook,
-        handleEventHook    = myEventHook,
-        logHook            = myLogHook,
-        startupHook        = myStartupHook
+    -- hooks, layouts
+    layoutHook         = myLayout,
+    -- handleEventHook    = myEventHook,
+    -- logHook            = myLogHook,
+    startupHook        = myStartupHook
     }
 #+end_src
 

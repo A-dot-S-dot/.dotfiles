@@ -1,9 +1,18 @@
+-- Base
 import XMonad
 import System.Exit
 import qualified XMonad.StackSet as W
 
+-- Data
 import Data.Monoid
 import qualified Data.Map        as M
+
+-- Hooks
+import XMonad.Hooks.ManageDocks
+
+-- Utilities
+import XMonad.Util.Run
+import XMonad.Util.SpawnOnce
 
 myModMask :: KeyMask
 myModMask = mod4Mask
@@ -21,9 +30,11 @@ myBorderWidth :: Dimension
 myBorderWidth = 2
 
 myStartupHook :: X ()
-myStartupHook = return ()
+myStartupHook = do
+  spawnOnce "nitrogen --restore &"
+  spawnOnce "picom &"
 
-myLayout = tiled ||| Mirror tiled ||| Full
+myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -43,7 +54,7 @@ myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore ]
+    , resource  =? "kdesktop"       --> doIgnore]
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
@@ -157,29 +168,31 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
 myNormalBorderColor  = "#dddddd"
 myFocusedBorderColor = "#ff0000"
-main = xmonad defaults
 
-defaults = def {
-      -- simple stuff
-        terminal           = myTerminal,
-        focusFollowsMouse  = myFocusFollowsMouse,
-        clickJustFocuses   = myClickJustFocuses,
-        borderWidth        = myBorderWidth,
-        modMask            = myModMask,
-        workspaces         = myWorkspaces,
-        normalBorderColor  = myNormalBorderColor,
-        focusedBorderColor = myFocusedBorderColor,
+main :: IO ()
+main = do
+  xmproc2 <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobarrc"
+  xmonad $ docks $ def {
+    manageHook         = myManageHook <+> manageDocks,
+    -- simple stuff
+    terminal           = myTerminal,
+    focusFollowsMouse  = myFocusFollowsMouse,
+    clickJustFocuses   = myClickJustFocuses,
+    borderWidth        = myBorderWidth,
+    modMask            = myModMask,
+    workspaces         = myWorkspaces,
+    normalBorderColor  = myNormalBorderColor,
+    focusedBorderColor = myFocusedBorderColor,
 
-      -- key bindings
-        keys               = myKeys,
-        mouseBindings      = myMouseBindings,
+    -- key bindings
+    keys               = myKeys,
+    mouseBindings      = myMouseBindings,
 
-      -- hooks, layouts
-        layoutHook         = myLayout,
-        manageHook         = myManageHook,
-        handleEventHook    = myEventHook,
-        logHook            = myLogHook,
-        startupHook        = myStartupHook
+    -- hooks, layouts
+    layoutHook         = myLayout,
+    -- handleEventHook    = myEventHook,
+    -- logHook            = myLogHook,
+    startupHook        = myStartupHook
     }
 
 help :: String
