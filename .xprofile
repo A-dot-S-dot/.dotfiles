@@ -1,6 +1,9 @@
 # Add path for Doom Emacs
 PATH="$HOME/.emacs.d/bin:$PATH"
 
-# Ensure to add 'Option "XkbOptions" "caps:nocaps"' to /etc/X11/xorg.conf.d/00-keyborad.conf in "InputClass"
+
+# Use caps lock as ctrl
+setxkbmap -option ctrl:nocaps
+
 # make short-pressed Ctrl behave like Escape
 xcape -e 'Control_L=Escape'
