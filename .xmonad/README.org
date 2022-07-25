@@ -1,6 +1,7 @@
 #+title: XMonad Config
 #+author: Alexey Schwarzmann
 #+property: header-args:haskell :tangle xmonad.hs
+#+startup: showeverything
 
 * Table of Contents :toc:
 - [[#about-this-config][About This Config]]
@@ -25,18 +26,27 @@ These are Haskell modules that I must import so that I can use their functions l
 -- Base
 import XMonad
 import System.Exit
+import System.IO
 import qualified XMonad.StackSet as W
 
 -- Data
+import Data.Maybe (fromJust)
 import Data.Monoid
-import qualified Data.Map        as M
+import qualified Data.Map as M
 
 -- Hooks
+import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.StatusBar.PP
 
 -- Utilities
+import XMonad.Util.EZConfig(additionalKeys)
+import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run
 import XMonad.Util.SpawnOnce
+
+-- ColorScheme
+import Colors.DoomOne
 #+end_src
 
 * Variables
@@ -58,6 +68,15 @@ myClickJustFocuses = False
 
 myBorderWidth :: Dimension
 myBorderWidth = 2
+
+myNormColor :: String       -- Border color of normal windows
+myNormColor   = colorBack   -- This variable is imported from Colors.THEME
+
+myFocusColor :: String      -- Border color of focused windows
+myFocusColor  = color15     -- This variable is imported from Colors.THEME
+
+windowCount :: X (Maybe String)
+windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 #+end_src
 
 * Autostart
@@ -68,6 +87,7 @@ myStartupHook :: X ()
 myStartupHook = do
   spawnOnce "nitrogen --restore &"
   spawnOnce "picom &"
+  spawnOnce "dropbox"
 #+end_src
 
 * Layouts
@@ -91,7 +111,11 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
 * Workspaces
 
 #+begin_src haskell
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces = [" dev ", " www ", " sys ", " doc ", " vbox ", " chat ", " mus ", " vid ", " gfx "]
+myWorkspaceIndices = M.fromList $ zipWith (,) myWorkspaces [1..] -- (,) == \x y -> (x,y)
+
+clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
+    where i = fromJust $ M.lookup ws myWorkspaceIndices
 #+end_src
 
 * Managehook
@@ -232,28 +256,51 @@ myFocusedBorderColor = "#ff0000"
 
 main :: IO ()
 main = do
+  xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobarrc"
+  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobarrc"
   xmproc2 <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobarrc"
   xmonad $ docks $ def {
-    manageHook         = myManageHook <+> manageDocks,
     -- simple stuff
-    terminal           = myTerminal,
-    focusFollowsMouse  = myFocusFollowsMouse,
-    clickJustFocuses   = myClickJustFocuses,
-    borderWidth        = myBorderWidth,
-    modMask            = myModMask,
-    workspaces         = myWorkspaces,
-    normalBorderColor  = myNormalBorderColor,
-    focusedBorderColor = myFocusedBorderColor,
+    terminal           = myTerminal
+    , focusFollowsMouse  = myFocusFollowsMouse
+    , clickJustFocuses   = myClickJustFocuses
+    , borderWidth        = myBorderWidth
+    , modMask            = myModMask
+    , workspaces         = myWorkspaces
+    , normalBorderColor  = myNormColor
+    , focusedBorderColor = myFocusColor
 
-    -- key bindings
-    keys               = myKeys,
-    mouseBindings      = myMouseBindings,
+    -- key binding
+    , keys               = myKeys
+    , mouseBindings      = myMouseBindings
 
-    -- hooks, layouts
-    layoutHook         = myLayout,
+    -- hooks, layout
+    , startupHook        = myStartupHook
+    , manageHook         = myManageHook <+> manageDocks
+    , layoutHook         = myLayout
     -- handleEventHook    = myEventHook,
-    -- logHook            = myLogHook,
-    startupHook        = myStartupHook
+    , logHook = dynamicLogWithPP $  filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
+        { ppOutput = \x -> hPutStrLn xmproc0 x   -- xmobar on monitor 1
+                        >> hPutStrLn xmproc1 x   -- xmobar on monitor 2
+                        >> hPutStrLn xmproc2 x   -- xmobar on monitor 3
+        , ppCurrent = xmobarColor color05 "" . wrap "[" "]"
+          -- Visible but not current workspace
+        , ppVisible = xmobarColor color05 "" . clickable
+          -- Hidden workspace
+        , ppHidden = xmobarColor color06 "" . clickable
+          -- Hidden workspaces (no windows)
+        , ppHiddenNoWindows = xmobarColor color09 ""  . clickable
+          -- Title of active window
+        , ppTitle = xmobarColor color16 "" . shorten 60
+          -- Separator character
+        , ppSep =  "<fc=" ++ color09 ++ "> <fn=1>|</fn> </fc>"
+          -- Urgent workspace
+        , ppUrgent = xmobarColor color02 "" . wrap "!" "!"
+          -- Adding # of windows on current workspace to the bar
+        , ppExtras  = [windowCount]
+          -- order of things in xmobar
+        , ppOrder  = \(ws:l:t:ex) -> [ws,l]++ex++[t]
+        }
     }
 #+end_src
 
