@@ -6,3 +6,7 @@
 .xmonad/xmonad.errors
 .xmonad/build-x86_64-linux
 .xmonad/xmonad-x86_64-linux
+
+;; .local/bin
+.local/bin/open-weather
+.local/bin/open-calendar
