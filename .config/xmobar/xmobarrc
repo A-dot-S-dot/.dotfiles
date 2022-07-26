@@ -36,7 +36,7 @@ Config { font            = "xft:Iosevka Aile:weight=bold:pixelsize=11:antialias=
                         -- Echos an "up arrow" icon in front of the uptime output.
                     , Run Com "echo" ["<fn=2>\xf0aa</fn>"] "uparrow" 3600
                         -- Uptime
-                    , Run Uptime ["-t", "uptime: <days>d <hours>h"] 360
+                    , Run Uptime ["-t", "uptime: <days>d <hours>h <minutes>m"] 360
                         -- Bell
                     , Run Com "echo" ["<fn=2>\xf0f3</fn>"] "bell" 3600
                         -- Check for pacman updates (script found in .local/bin)
