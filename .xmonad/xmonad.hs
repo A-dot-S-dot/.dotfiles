@@ -44,14 +44,26 @@ myNormColor   = colorBack   -- This variable is imported from Colors.THEME
 myFocusColor :: String      -- Border color of focused windows
 myFocusColor  = color15     -- This variable is imported from Colors.THEME
 
+mySoundPlayer :: String
+mySoundPlayer = "ffplay -nodisp -autoexit " -- The program that will play system sounds
+
 windowCount :: X (Maybe String)
 windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
 myStartupHook :: X ()
 myStartupHook = do
-  spawnOnce "nitrogen --restore &"
-  spawnOnce "picom &"
+  spawnOnce (mySoundPlayer ++ startupSound)
+  spawn "killall conky"   -- kill current conky on each restart
+  spawn "killall trayer"  -- kill current trayer on each restart
+  spawnOnce "lxsession"
+  spawnOnce "picom"
+  spawnOnce "nm-applet"
+  spawnOnce "volumeicon"
+  spawn "/usr/bin/emacs --daemon" -- emacs daemon for the emacsclient
   spawnOnce "dropbox"
+  spawnOnce "nitrogen --restore &"
+  spawn ("sleep 2 && conky -c $HOME/.config/conky/xmonad/" ++ colorScheme ++ "-01.conkyrc")
+  spawn ("sleep 2 && trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 2 --transparent true --alpha 0 " ++ colorTrayer ++ " --height 22")
 
 myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
   where
@@ -78,6 +90,12 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore]
+
+soundDir = "~/sounds/" -- The directory that has the sound files
+
+startupSound  = soundDir ++ "startup.mp3"
+shutdownSound = soundDir ++ "shutdown.mp3"
+dmenuSound    = soundDir ++ "menu.mp3"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
