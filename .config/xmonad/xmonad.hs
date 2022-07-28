@@ -224,8 +224,8 @@ myKeys c =
   subKeys "Xmonad Essentials"
   [ ("M-r", addName "Restart XMonad"           $ spawn "xmonad --recompile; xmonad --restart")
   , ("M-q", addName "Quit XMonad"              $ io exitSuccess)
-  , ("M-d", addName "Kill focused window"      $ kill1)
-  , ("M-S-d", addName "Kill all windows on WS" $ killAll)
+  , ("M-w", addName "Kill focused window"      $ kill1)
+  , ("M-S-w", addName "Kill all windows on WS" $ killAll)
   , ("M-S-<Return>", addName "Run prompt"      $ spawn "~/.local/bin/dm-run")]
 
   ^++^ subKeys "Switch to workspace"
@@ -285,6 +285,12 @@ myKeys c =
   , ("M-C-j", addName "Shrink window vertically" $ sendMessage MirrorShrink)
   , ("M-C-k", addName "Expand window vertically" $ sendMessage MirrorExpand)]
 
+  -- Floating windows
+  ^++^ subKeys "Floating windows"
+  [ ("M-f", addName "Toggle float layout"        $ sendMessage (T.Toggle "floats"))
+  , ("M-t", addName "Sink a floating window"     $ withFocused $ windows . W.sink)
+  , ("M-S-t", addName "Sink all floated windows" $ sinkAll)]
+
   -- Increase/decrease windows in the master pane or the stack
   ^++^ subKeys "Increase/decrease windows in master pane or the stack"
   [ ("M-S-<Up>", addName "Increase clients in master pane"   $ sendMessage (IncMasterN 1))
@@ -297,7 +303,7 @@ myKeys c =
   -- When you toggle them to show, it brings them to current workspace.
   -- Toggle them to hide and it sends them back to hidden workspace (NSP).
   ^++^ subKeys "Scratchpads"
-  [ ("M-S-t", addName "Toggle scratchpad terminal"   $ namedScratchpadAction myScratchPads "terminal")
+  [ ("M-s", addName "Toggle scratchpad terminal"   $ namedScratchpadAction myScratchPads "terminal")
   , ("M-c", addName "Toggle scratchpad calculator" $ namedScratchpadAction myScratchPads "calculator")]
 
   -- The following lines are needed for named scratchpads.
@@ -333,7 +339,7 @@ main = do
           -- Hidden workspaces (no windows)
         , ppHiddenNoWindows = xmobarColor color09 ""  . clickable
           -- Title of active window
-        , ppTitle = xmobarColor color16 "" . shorten 60
+        , ppTitle = xmobarColor color16 "" . shorten 40
           -- Separator character
         , ppSep =  "<fc=" ++ color09 ++ "> <fn=1>|</fn> </fc>"
           -- Urgent workspace
