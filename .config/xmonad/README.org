@@ -304,8 +304,8 @@ myKeys c =
   subKeys "Xmonad Essentials"
   [ ("M-r", addName "Restart XMonad"           $ spawn "xmonad --recompile; xmonad --restart")
   , ("M-q", addName "Quit XMonad"              $ io exitSuccess)
-  , ("M-w", addName "Kill focused window"      $ kill1)
-  , ("M-S-w", addName "Kill all windows on WS" $ killAll)
+  , ("M-d", addName "Kill focused window"      $ kill1)
+  , ("M-S-d", addName "Kill all windows on WS" $ killAll)
   , ("M-S-<Return>", addName "Run prompt"      $ spawn "~/.local/bin/dm-run")]
 
   ^++^ subKeys "Switch to workspace"
