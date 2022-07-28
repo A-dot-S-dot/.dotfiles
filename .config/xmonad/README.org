@@ -110,7 +110,7 @@ myBrowser :: String
 myBrowser = "firefox "
 
 myEmacs :: String
-myEmacs = "emacsclient -c -a 'emacs' "  -- Makes emacs keybindings easier to type
+myEmacs = "emacsclient -c -a emacs "
 
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
@@ -144,7 +144,7 @@ myStartupHook = do
   spawnOnce "picom"
   spawnOnce "nm-applet"
   spawnOnce "volumeicon"
-  -- spawn "/usr/bin/emacs --daemon" -- emacs daemon for the emacsclient
+  spawn "emacs --daemon"
   spawnOnce "dropbox"
   spawnOnce "nitrogen --restore &"
   spawn ("sleep 2 && conky -c $HOME/.config/conky/xmonad/" ++ colorScheme ++ "-01.conkyrc")
@@ -377,6 +377,13 @@ myKeys c =
   , ("M-S-<Down>", addName "Decrease clients in master pane" $ sendMessage (IncMasterN (-1)))
   , ("M-+", addName "Increase max # of windows for layout"   $ increaseLimit)
   , ("M--", addName "Decrease max # of windows for layout"   $ decreaseLimit)]
+
+  -- Emacs (SUPER-e followed by a key)
+  ^++^ subKeys "Emacs"
+  [ ("M-e e", addName "Emacsclient Dashboard"    $ spawn (myEmacs))
+  , ("M-e b", addName "Emacsclient Ibuffer"      $ spawn (myEmacs ++ ("-e '(ibuffer)'")))
+  , ("M-e d", addName "Emacsclient Dired"        $ spawn (myEmacs ++ ("-e '(dired nil)'")))
+  , ("M-e v", addName "Emacsclient Vterm"        $ spawn (myEmacs ++ ("-e '(+vterm/here nil)'")))]
 
   -- Scratchpads
   -- Toggle show/hide these programs. They run on a hidden workspace.
