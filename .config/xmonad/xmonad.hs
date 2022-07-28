@@ -85,11 +85,21 @@ myWorkspaceIndices = M.fromList $ zipWith (,) myWorkspaces [1..] -- (,) == \x y 
 clickable ws = "<action=xdotool key super+"++show i++">"++ws++"</action>"
     where i = fromJust $ M.lookup ws myWorkspaceIndices
 
+myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-    [ className =? "MPlayer"        --> doFloat
-    , className =? "Gimp"           --> doFloat
-    , resource  =? "desktop_window" --> doIgnore
-    , resource  =? "kdesktop"       --> doIgnore]
+  -- 'doFloat' forces a window to float.  Useful for dialog boxes and such.
+  -- using 'doShift ( myWorkspaces !! 7)' sends program to workspace 8!
+  -- I'm doing it this way because otherwise I would have to write out the full
+  -- name of my workspaces and the names would be very long if using clickable workspaces.
+  [ className =? "confirm"         --> doFloat
+  , className =? "file_progress"   --> doFloat
+  , className =? "dialog"          --> doFloat
+  , className =? "download"        --> doFloat
+  , className =? "error"           --> doFloat
+  , className =? "notification"    --> doFloat
+  , title =? "Mozilla Firefox"     --> doShift ( myWorkspaces !! 1 )
+  , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
+  ]
 
 soundDir = "~/sounds/" -- The directory that has the sound files
 
