@@ -357,12 +357,12 @@ myKeys c =
   [ ("M-p h", addName "List all dmscripts"     $ spawn "dm-hub")
   -- , ("M-p b", addName "Set background"         $ spawn "dm-setbg")
   -- , ("M-p c", addName "Choose color scheme"    $ spawn "~/.local/bin/dtos-colorscheme")
-  -- , ("M-p e", addName "Edit config files"      $ spawn "dm-confedit")
+  , ("M-p e", addName "Edit config files"      $ spawn "dm-confedit")
   , ("M-p i", addName "Take a screenshot"      $ spawn "dm-maim")
   , ("M-p k", addName "Kill processes"         $ spawn "dm-kill")
   , ("M-p m", addName "View manpages"          $ spawn "dm-man")
   , ("M-p p", addName "Passmenu"               $ spawn "passmenu -p \"Pass: \"")
-  -- , ("M-p s", addName "Search various engines" $ spawn "dm-websearch")
+  , ("M-p s", addName "Search various engines" $ spawn "dm-websearch")
   ]
 
   ^++^ subKeys "Favorite programs"

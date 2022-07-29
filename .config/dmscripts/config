@@ -15,7 +15,7 @@ DMBROWSER="firefox"
 
 DMTERM="alacritty -e"
 
-DMEDITOR="emacscleint -c -a emacs"
+DMEDITOR="emacsclient -c -a emacs"
 
 # TODO: Rename this variable to something more traditional
 logout_locker='slock'
@@ -80,6 +80,7 @@ declare -A websearch
 
 # Search Engines
 websearch[google]="https://www.google.com/search?q="
+websearch[ecosia]="https://www.ecosia.org/search?q="
 # Information/News
 websearch[wikipedia]="https://en.wikipedia.org/w/index.php?search="
 websearch[wiktionary]="https://en.wiktionary.org/w/index.php?search="
@@ -97,7 +98,8 @@ websearch[gitlab]="https://gitlab.com/search?search="
 websearch[googleOpenSource]="https://opensource.google/projects/search?q="
 websearch[sourceforge]="https://sourceforge.net/directory/?q="
 websearch[stackoverflow]="https://stackoverflow.com/search?q="
-# Etc
+# Science
+websearch[googleScholar]="https://scholar.google.com/scholar?hl=de&as_sdt=0%25252C5&q="
 
 # dm-currencies config
 
