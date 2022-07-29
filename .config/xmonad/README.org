@@ -310,7 +310,7 @@ myKeys c =
   , ("M-q", addName "Quit XMonad"              $ io exitSuccess)
   , ("M-d", addName "Kill focused window"      $ kill1)
   , ("M-S-d", addName "Kill all windows on WS" $ killAll)
-  , ("M-S-<Return>", addName "Run prompt"      $ spawn "~/.local/bin/dm-run")]
+  , ("M-S-<Return>", addName "Run prompt"      $ spawn "dm-run")]
 
   ^++^ subKeys "Switch to workspace"
   [ ("M-S-l", addName "Switch to next workspace" $ (moveTo Next nonNSP))
@@ -415,6 +415,15 @@ myKeys c =
   ^++^ subKeys "Scratchpads"
   [ ("M-s", addName "Toggle scratchpad terminal"   $ namedScratchpadAction myScratchPads "terminal")
   , ("M-c", addName "Toggle scratchpad calculator" $ namedScratchpadAction myScratchPads "calculator")]
+
+  -- Multimedia Keys
+  ^++^ subKeys "Multimedia keys"
+  [-- ("<XF86AudioMute>", addName "Toggle audio mute"    $ spawn "amixer set Master toggle")
+  -- , ("<XF86AudioLowerVolume>", addName "Lower vol"    $ spawn "amixer set Master 5%- unmute")
+  -- , ("<XF86AudioRaiseVolume>", addName "Raise vol"    $ spawn "amixer set Master 5%+ unmute")
+  -- , ("<XF86Search>", addName "Web search (dmscripts)" $ spawn "dm-websearch")
+  , ("<XF86Calculator>", addName "Calculator"         $ runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
+  ]
 
   -- The following lines are needed for named scratchpads.
     where nonNSP          = WSIs (return (\ws -> W.tag ws /= "NSP"))
