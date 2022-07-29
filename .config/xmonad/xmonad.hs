@@ -195,8 +195,10 @@ myManageHook = composeAll
   , className =? "error"           --> doFloat
   , className =? "notification"    --> doFloat
   , className =? "Yad"             --> doCenterFloat
+  , title =? "Oracle VM VirtualBox Manager"  --> doFloat
   , title =? "Mozilla Firefox"     --> doShift ( myWorkspaces !! 1 )
   , className =? "Signal"          --> doShift ( myWorkspaces !! 4 )
+  , className =? "VirtualBox Manager" --> doShift  ( myWorkspaces !! 4 )
   , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
   , isFullscreen -->  doFullFloat
   ] <+> namedScratchpadManageHook myScratchPads
