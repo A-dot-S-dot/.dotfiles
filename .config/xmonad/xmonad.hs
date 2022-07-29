@@ -227,7 +227,7 @@ myKeys c =
   let subKeys str ks = subtitle' str : mkNamedKeymap c ks in
   subKeys "Xmonad Essentials"
   [ ("M-r", addName "Restart XMonad"           $ spawn "xmonad --recompile; xmonad --restart")
-  , ("M-q", addName "Quit XMonad"              $ io exitSuccess)
+  , ("M-q", addName "Logout Menu"              $ spawn "dm-logout")
   , ("M-d", addName "Kill focused window"      $ kill1)
   , ("M-S-d", addName "Kill all windows on WS" $ killAll)
   , ("M-S-<Return>", addName "Run prompt"      $ spawn "dm-run")]
@@ -282,7 +282,6 @@ myKeys c =
   , ("M-p k", addName "Kill processes"         $ spawn "dm-kill")
   , ("M-p m", addName "View manpages"          $ spawn "dm-man")
   , ("M-p p", addName "Passmenu"               $ spawn "passmenu -p \"Pass: \"")
-  , ("M-p q", addName "Logout Menu"            $ spawn "dm-logout")
   -- , ("M-p s", addName "Search various engines" $ spawn "dm-websearch")
   ]
 
