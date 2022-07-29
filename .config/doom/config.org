@@ -41,6 +41,7 @@
 - [[#snippets-with-yasnippet][Snippets with =yasnippet=]]
 - [[#programming-with-lsp][Programming with =lsp=]]
   - [[#cc][CC]]
+- [[#terminal-with-vterm][Terminal with =vterm=]]
 - [[#useful-hacks][Useful hacks]]
   - [[#comment-box][Comment box]]
 
@@ -1299,6 +1300,14 @@ Settings for =C=-Language support.
                                 "--header-insertion=never"
                                 "--header-insertion-decorators=0"))
 (after! lsp-clangd (set-lsp-priority! 'clangd 2))
+#+end_src
+
+* Terminal with =vterm=
+Use =bash= as default shell.
+
+#+begin_src emacs-lisp
+(after! vterm
+  (setq vterm-shell "/bin/bash"))
 #+end_src
 
 * Useful hacks

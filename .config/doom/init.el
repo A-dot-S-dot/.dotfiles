@@ -59,6 +59,7 @@
        (org +pretty +roam2 +dragndrop)
        (python +lsp +pyright)
        (haskell +lsp)
+       (yaml +lsp)
 
        :config
        literate
