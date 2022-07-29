@@ -111,7 +111,7 @@ myStartupHook = do
   spawnOnce "volumeicon"
   spawn "emacs --daemon"
   spawnOnce "dropbox"
-  spawnOnce "nitrogen --restore &"
+  spawnOnce "xargs xwallpaper --stretch < ~/.cache/wall"
   spawn ("sleep 2 && trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 2 --transparent true --alpha 0 " ++ colorTrayer ++ " --height 22")
 
 myScratchPads :: [NamedScratchpad]
@@ -275,8 +275,7 @@ myKeys c =
   -- launch dmenu_run, so I've decided to use M-p plus KEY for these dmenu scripts.
   ^++^ subKeys "Dmenu scripts"
   [ ("M-p h", addName "List all dmscripts"     $ spawn "dm-hub")
-  -- , ("M-p b", addName "Set background"         $ spawn "dm-setbg")
-  -- , ("M-p c", addName "Choose color scheme"    $ spawn "~/.local/bin/dtos-colorscheme")
+  , ("M-p b", addName "Set background"         $ spawn "dm-setbg")
   , ("M-p e", addName "Edit config files"      $ spawn "dm-confedit")
   , ("M-p i", addName "Take a screenshot"      $ spawn "dm-maim")
   , ("M-p k", addName "Kill processes"         $ spawn "dm-kill")
