@@ -3,5 +3,7 @@
 I've started my Emacs journey at the beginning of 2021. It is a lot of
 fun thanks to the System-Craftes channel on [[https://www.youtube.com/channel/UCAiiOTio8Yu69c3XnR7nQBQ][YouTube]].
 
-After further investigations I discovered [[https://github.com/doomemacs/doomemacs][Doom Emacs]] for me. And later Xmonad
+After further investigations I discovered [[https://github.com/doomemacs/doomemacs][Doom Emacs]] for me and later [[https://xmonad.org/][Xmonad]]
 thanks to [[https://distro.tube/index.html][DistroTube]]. In my =.local/bin= I use his [[https://gitlab.com/dwt1/dmscripts/-/tree/master/][dmscripts]].
+
+I use =stow .= in =.dotfiles= directory to create symlinks in my =$HOME= folder.
