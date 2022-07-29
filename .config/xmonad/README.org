@@ -380,7 +380,8 @@ myKeys c =
 
   -- Emacs (SUPER-e followed by a key)
   ^++^ subKeys "Emacs"
-  [ ("M-e e", addName "Emacsclient Dashboard"    $ spawn (myEmacs))
+  [ ("M-C-e", addName "Emacsclient Dashboard"    $ spawn (myEmacs))
+  , ("M-e e", addName "Emacsclient Dashboard"    $ spawn (myEmacs))
   , ("M-e b", addName "Emacsclient Ibuffer"      $ spawn (myEmacs ++ ("-e '(ibuffer)'")))
   , ("M-e d", addName "Emacsclient Dired"        $ spawn (myEmacs ++ ("-e '(dired nil)'")))
   , ("M-e v", addName "Emacsclient Vterm"        $ spawn (myEmacs ++ ("-e '(+vterm/here nil)'")))]
