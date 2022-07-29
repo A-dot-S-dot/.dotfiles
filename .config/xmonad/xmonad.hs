@@ -233,7 +233,9 @@ myKeys c =
   , ("M-S-<Return>", addName "Run prompt"      $ spawn "~/.local/bin/dm-run")]
 
   ^++^ subKeys "Switch to workspace"
-  [ ("M-1", addName "Switch to workspace 1"    $ (windows $ W.greedyView $ myWorkspaces !! 0))
+  [ ("M-S-l", addName "Switch to next workspace" $ (moveTo Next nonNSP))
+  , ("M-S-h", addName "Switch to prev workspace" $ (moveTo Prev nonNSP))
+  , ("M-1", addName "Switch to workspace 1"    $ (windows $ W.greedyView $ myWorkspaces !! 0))
   , ("M-2", addName "Switch to workspace 2"    $ (windows $ W.greedyView $ myWorkspaces !! 1))
   , ("M-3", addName "Switch to workspace 3"    $ (windows $ W.greedyView $ myWorkspaces !! 2))
   , ("M-4", addName "Switch to workspace 4"    $ (windows $ W.greedyView $ myWorkspaces !! 3))
