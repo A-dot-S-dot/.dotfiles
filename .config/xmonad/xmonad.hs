@@ -228,6 +228,7 @@ myKeys c =
   subKeys "Xmonad Essentials"
   [ ("M-r", addName "Restart XMonad"           $ spawn "xmonad --recompile; xmonad --restart")
   , ("M-q", addName "Logout Menu"              $ spawn "dm-logout")
+  , ("M-S-q", addName "Quit XMonad"            $ io exitSuccess)
   , ("M-d", addName "Kill focused window"      $ kill1)
   , ("M-S-d", addName "Kill all windows on WS" $ killAll)
   , ("M-S-<Return>", addName "Run prompt"      $ spawn "dm-run")]
