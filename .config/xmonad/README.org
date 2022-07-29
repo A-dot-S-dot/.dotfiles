@@ -422,7 +422,7 @@ myKeys c =
   -- , ("<XF86AudioLowerVolume>", addName "Lower vol"    $ spawn "amixer set Master 5%- unmute")
   -- , ("<XF86AudioRaiseVolume>", addName "Raise vol"    $ spawn "amixer set Master 5%+ unmute")
   -- , ("<XF86Search>", addName "Web search (dmscripts)" $ spawn "dm-websearch")
-  , ("<XF86Calculator>", addName "Calculator"         $ runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
+  ("<XF86Calculator>", addName "Calculator"         $ runOrRaise "qalculate-gtk" (resource =? "qalculate-gtk"))
   ]
 
   -- The following lines are needed for named scratchpads.
