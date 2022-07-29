@@ -147,7 +147,6 @@ myStartupHook = do
   spawn "emacs --daemon"
   spawnOnce "dropbox"
   spawnOnce "nitrogen --restore &"
-  spawn ("sleep 2 && conky -c $HOME/.config/conky/xmonad/" ++ colorScheme ++ "-01.conkyrc")
   spawn ("sleep 2 && trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 2 --transparent true --alpha 0 " ++ colorTrayer ++ " --height 22")
 #+end_src
 
