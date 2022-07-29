@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
+# This issue is ignored because it is part of a larger file that calls upon all variables listed
+
+# To edit this file copy it to `${HOME}/.config/dmscripts/config`
+# `cp /etc/dmscripts/config ${HOME}/.config/dmscripts/config`
+
+# Defined variables, modify anything in quotes to your prefered software
+
+# -p is needed as we use prompts, alternative programs have to handle prompts well.
+
+DMENU="dmenu -i -l 20 -p"
+
+DMBROWSER="firefox"
+
+DMTERM="alacritty -e"
+
+DMEDITOR="emacscleint -c -a emacs"
+
+# TODO: Rename this variable to something more traditional
+logout_locker='slock'
+
+# This case statement lets you change what the DMENU variable is for different scripts, so if you
+# want a unique variable for each script you can
+# syntax is as follows:
+# "<ending-of-script>") DMENU="your variable here"
+# *) should be left blank, global variables are defined above
+
+# include -p in standard dmenu as we use prompts by default
+case "${0##*-}" in
+#  "colpick") DMENU="dmenu -i -p";;
+#  "confedit") DMENU="dmenu -i -l 30 -p";;
+#  "youtube") DMBROWSER="firefox";;
+  *);;
+esac
+
+# "${0##*-}" means grab the 0th argument (which is always the path to the program) starting from the
+# last dash. This gives us the word after the - which is what we are searching for in the case
+# statement. ie dm-man -> man
+
+# An awk equivalent is: 
+# awk -F"-" '{print $NF}'
+# Sadly cut has no easy equivalent
+
+# TODO: Move almost all of these variables into the case statement
+# TODO: Make some of the more useful ones general variables
+# IE a pictures directory, an audio directory, config locations, etc
+
+# dm-setbg
+setbg_dir="${HOME}/Pictures"
+# Set this to 1 if you want to use imv and wayland, 0 if you want to use sxiv
+# Note that sxiv is X11 only, you need to mark the image you want to use.
+use_imv=0 
+
+# dm-maim
+maim_dir="${HOME}/Screenshots"
+maim_file_prefix="maim"
+
+# dm-confedit
+declare -A confedit_list
+confedit_list[confedit]="$HOME/.config/dmscripts/config"
+confedit_list[alacritty]="$HOME/.config/alacritty/alacritty.yml"
+confedit_list[bash]="$HOME/.bashrc"
+confedit_list[doom emacs config.org]="$HOME/.config/doom/config.org"
+confedit_list[doom emacs init.el]="$HOME/.config/doom/init.el"
+confedit_list[doom emacs packages.el]="$HOME/.config/doom/packages.el"
+confedit_list[picom]="$HOME/.config/picom/picom.conf"
+confedit_list[ssh]="$HOME/.ssh/config"
+confedit_list[xmobar]="$HOME/.config/xmobar/xmobarrc"
+confedit_list[xmobar no trayer]="$HOME/.config/xmobar/xmobarrc-no-trayer"
+confedit_list[xmonad]="$HOME/.xmonad/README.org"
+confedit_list[xinitrc]="$HOME/.xinitrc"
+confedit_list[xresources]="$HOME/.Xresources"
+confedit_list[zsh]="$HOME/.zshrc"
+
+# Search engine config
+declare -A websearch
+# Syntax:
+# websearch[name]="https://www.example.com/search?q="
+
+# Search Engines
+websearch[google]="https://www.google.com/search?q="
+# Information/News
+websearch[wikipedia]="https://en.wikipedia.org/w/index.php?search="
+websearch[wiktionary]="https://en.wiktionary.org/w/index.php?search="
+# Social Media
+websearch[youtube]="https://www.youtube.com/results?search_query="
+# Online Shopping
+websearch[amazon]="https://www.amazon.com/s?k="
+# Linux
+websearch[archaur]="https://aur.archlinux.org/packages/?O=0&K="
+websearch[archpkg]="https://archlinux.org/packages/?sort=&q="
+websearch[archwiki]="https://wiki.archlinux.org/index.php?search="
+# Development
+websearch[github]="https://github.com/search?q="
+websearch[gitlab]="https://gitlab.com/search?search="
+websearch[googleOpenSource]="https://opensource.google/projects/search?q="
+websearch[sourceforge]="https://sourceforge.net/directory/?q="
+websearch[stackoverflow]="https://stackoverflow.com/search?q="
+# Etc
+
+# dm-currencies config
+
+# Chose how you want to display the currencies (default: "names")
+# currency_names="codes"
+
+# "auto" will get currencies dynamically, "manual" will only use the currencies you define (default: "auto")
+# defined currencies will still be included when set to auto
+# currency_method="manual"
+
+declare -A currencies
+# currencies[Dollar]="USD"
+# currencies[Pound]="GBP"
+# currencies[Monero]="XMR"
+# see: https://rate.sx/:currencies and https://rate.sx/:coins
+
+_revision=22
