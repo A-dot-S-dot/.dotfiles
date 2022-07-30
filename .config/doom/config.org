@@ -99,6 +99,7 @@ theme which is also inspired by atom.
 (setq doom-font (font-spec :family "Fira Mono" :size 18)
       doom-variable-pitch-font (font-spec :family "Iosevka Aile" :weight 'light))
 (custom-set-faces! '(fixed-pitch :font "JetBrains Mono" :weight light))
+(setq doom-theme 'doom-solarized-light)
 
 (after! doom-themes
   (setq doom-themes-enable-bold t

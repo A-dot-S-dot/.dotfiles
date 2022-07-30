@@ -296,7 +296,7 @@ schemes:
 # *DoomOne
 # *SolarizedLight
 
-colors: *DoomOne
+colors: *SolarizedLight
 
 #######################################
 ##       END OF COLOR SCHEMES        ##

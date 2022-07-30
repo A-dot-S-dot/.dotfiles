@@ -101,7 +101,7 @@ static unsigned int lines      = 0;
  * 1. doom-one.h
  * 2. solarized-light.h
  */
-#include "colors/doom-one.h"
+#include "colors/solarized-light.h"
 
 #if GRID_PATCH
 /* -g option; if nonzero, dmenu uses a grid comprised of columns and lines */
