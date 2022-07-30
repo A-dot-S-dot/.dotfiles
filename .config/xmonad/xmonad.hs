@@ -231,7 +231,9 @@ myKeys c =
   , ("M-S-q", addName "Quit XMonad"            $ io exitSuccess)
   , ("M-d", addName "Kill focused window"      $ kill1)
   , ("M-S-d", addName "Kill all windows on WS" $ killAll)
-  , ("M-S-<Return>", addName "Run prompt"      $ spawn "dm-run")]
+  , ("M-S-<Return>", addName "Run prompt"      $ spawn "dm-run")
+  , ("M-o", addName "Toggle ligth"             $ spawn "switch-colorscheme")]
+
 
   ^++^ subKeys "Switch to workspace"
   [ ("M-S-l", addName "Switch to next workspace" $ (moveTo Next nonNSP))
@@ -353,9 +355,9 @@ myFocusedBorderColor = "#ff0000"
 
 main :: IO ()
 main = do
-  xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobarrc-without-trayer"
-  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobarrc-without-trayer"
-  xmproc2 <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobarrc"
+  xmproc0 <- spawnPipe ("xmobar -x 0 $HOME/.config/xmobar/" ++ colorScheme ++ "-xmobarrc")
+  xmproc1 <- spawnPipe ("xmobar -x 1 $HOME/.config/xmobar/" ++ colorScheme ++ "-xmobarrc")
+  xmproc2 <- spawnPipe ("xmobar -x 2 $HOME/.config/xmobar/" ++ colorScheme ++ "-xmobarrc")
   xmonad $ addDescrKeys' ((mod4Mask, xK_F1), showKeybindings) myKeys $ ewmh $ docks $ def
     {manageHook         = myManageHook <+> manageDocks
     , modMask            = myModMask

@@ -112,7 +112,7 @@ Toggle light theme via binding.
 
 #+begin_src emacs-lisp
 (defun als-toggle-light-theme ()
-  "Toggles `doom-one-light` if `doom-one` is active and vice versa."
+  "Toggles `doom-solarized-light` if `doom-one` is active and vice versa."
   (interactive)
   (if (equal doom-theme 'doom-one)
       (progn
