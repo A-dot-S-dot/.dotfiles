@@ -38,7 +38,7 @@ setbg() {
 }
 
 main() {
-  choice="$(printf "Set\nRandom\nExit" | ${DMENU} "What would you like to do?")" 
+  choice="$(printf "Set\nRandom" | ${DMENU} "What would you like to do?")"
   case "$choice" in
     "Set") 
     if [ "$use_imv" = 0 ]; then
@@ -68,8 +68,6 @@ main() {
       valid_paper="$(printf "Yes\nNo" | ${DMENU} "Do you like the new wallpaper?")"
     done
     ;;
-    "Exit") echo "Program terminated" && exit 1;;
-    *) err "Invalid choice";;
   esac
 }
 
