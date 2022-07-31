@@ -279,7 +279,7 @@ myKeys c =
   ^++^ subKeys "Dmenu scripts"
   [ ("M-p h", addName "List all dmscripts"     $ spawn "dm-hub")
   , ("M-p b", addName "Set background"         $ spawn "dm-setbg")
-  , ("M-p e", addName "Edit config files"      $ spawn "dm-confedit")
+  , ("M-p c", addName "Edit config files"      $ spawn "dm-confedit")
   , ("M-p i", addName "Take a screenshot"      $ spawn "dm-maim")
   , ("M-p k", addName "Kill processes"         $ spawn "dm-kill")
   , ("M-p m", addName "View manpages"          $ spawn "dm-man")
