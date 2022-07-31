@@ -45,7 +45,6 @@ main() {
     "Reboot"
     "Shutdown"
     "Suspend"
-    "Quit"
     )
 
     # look up what managers are used (makes it more dynamic)
