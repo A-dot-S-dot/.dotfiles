@@ -64,14 +64,8 @@ confedit_list[bash]="$HOME/.bashrc"
 confedit_list[doom emacs config.org]="$HOME/.config/doom/config.org"
 confedit_list[doom emacs init.el]="$HOME/.config/doom/init.el"
 confedit_list[doom emacs packages.el]="$HOME/.config/doom/packages.el"
-confedit_list[picom]="$HOME/.config/picom/picom.conf"
 confedit_list[ssh]="$HOME/.ssh/config"
-confedit_list[xmobar]="$HOME/.config/xmobar/xmobarrc"
-confedit_list[xmobar no trayer]="$HOME/.config/xmobar/xmobarrc-no-trayer"
 confedit_list[xmonad]="$HOME/.xmonad/README.org"
-confedit_list[xinitrc]="$HOME/.xinitrc"
-confedit_list[xresources]="$HOME/.Xresources"
-confedit_list[zsh]="$HOME/.zshrc"
 
 # Search engine config
 declare -A websearch
