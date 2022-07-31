@@ -103,10 +103,8 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 myStartupHook :: X ()
 myStartupHook = do
   spawnOnce (mySoundPlayer ++ startupSound)
-  spawn "killall conky"   -- kill current conky on each restart
   spawn "killall trayer"  -- kill current trayer on each restart
   spawnOnce "lxsession"
-  spawnOnce "picom"
   spawnOnce "nm-applet"
   spawnOnce "volumeicon"
   spawn "emacs --daemon"
