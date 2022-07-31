@@ -355,8 +355,7 @@ myKeys c =
   -- In Xmonad and many tiling window managers, M-p is the default keybinding to
   -- launch dmenu_run, so I've decided to use M-p plus KEY for these dmenu scripts.
   ^++^ subKeys "Dmenu scripts"
-  [ ("M-p h", addName "List all dmscripts"     $ spawn "dm-hub")
-  , ("M-p b", addName "Set background"         $ spawn "dm-setbg")
+  [ ("M-p b", addName "Set background"         $ spawn "dm-setbg")
   , ("M-p c", addName "Edit config files"      $ spawn "dm-confedit")
   , ("M-p i", addName "Take a screenshot"      $ spawn "dm-maim")
   , ("M-p k", addName "Kill processes"         $ spawn "dm-kill")
