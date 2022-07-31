@@ -2,4 +2,6 @@
 
 Patched version of [[https://gitlab.com/dwt1/dmenu-distrotube][dmenu of distrotube]]. To install just type:
 
-+ sudo make clean install && rm config.h
+#+begin_src bash
+sudo make clean install && rm config.h
+#+end_src
