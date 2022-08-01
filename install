@@ -14,10 +14,13 @@ stow .
 cd
 
 # xmonad dependencies
-sudo pamac -S network-manager-applet
+sudo pacman -S network-manager-applet
+
+# dm-scripts dependencies
+sudo pacman -S jq
 
 # alacrity
-sudo pacmn -S alacritty bat starship
+sudo pacman -S alacritty bat starship
 git clone https://gitlab.com/dwt1/shell-color-scripts.git
 cd shell-color-scripts
 sudo make install
