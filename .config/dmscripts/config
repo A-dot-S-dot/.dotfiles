@@ -68,6 +68,10 @@ confedit_list[ssh]="$HOME/.ssh/config"
 confedit_list[xmonad]="$HOME/.config/xmonad/README.org"
 confedit_list[xmobar]="$HOME/.config/xmobar/xmobarrc"
 confedit_list[xmobar no trayer]="$HOME/.config/xmobar/no-trayer-xmobarrc"
+confedit_list[book ref]="$HOME/Dropbox/Alexey/Literature/Books/references.bib"
+confedit_list[article ref]="$HOME/Dropbox/Alexey/Literature/Articles/references.bib"
+confedit_list[lecture ref]="$HOME/Dropbox/Alexey/Literature/Lectures/references.bib"
+confedit_list[other ref]="$HOME/Dropbox/Alexey/Literature/other.bib"
 
 # Search engine config
 declare -A websearch
