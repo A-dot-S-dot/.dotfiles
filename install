@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
 # Installation script for my setup
 
+# update pacman
+sudo pacman -Syu
+
+# base installations
+sudo pacman -S xcape stow
+
+# link dotfiles
+git clone https://github.com/A-dot-S-dot/.dotfiles.git
+cd .dotfiles
+stow .
+cd
+
 # xmonad dependencies
-sudo pamac -Syu network-manager-applet
+sudo pamac -S network-manager-applet
+
+# alacrity
+sudo pacmn -S alacritty bat starship
+git clone https://gitlab.com/dwt1/shell-color-scripts.git
+cd shell-color-scripts
+sudo make install
+cd
