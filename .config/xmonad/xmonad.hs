@@ -347,8 +347,8 @@ myFocusedBorderColor = "#ff0000"
 
 main :: IO ()
 main = do
-  xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobarrc"
-  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/no-trayer-xmobarrc"
+  xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/no-trayer-xmobarrc"
+  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobarrc"
   xmonad $ addDescrKeys' ((mod4Mask, xK_F1), showKeybindings) myKeys $ ewmh $ docks $ def
     {manageHook         = myManageHook <+> manageDocks
     , modMask            = myModMask
