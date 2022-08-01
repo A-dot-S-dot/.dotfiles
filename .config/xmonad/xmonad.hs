@@ -110,7 +110,7 @@ myStartupHook = do
   spawn "emacs --daemon"
   spawnOnce "dropbox"
   spawnOnce "xargs xwallpaper --stretch < ~/.cache/wall"
-  spawn ("sleep 2 && trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 2 --transparent true --alpha 0 " ++ colorTrayer ++ " --height 22")
+  spawn ("sleep 2 && trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 " ++ colorTrayer ++ " --height 22")
 
 myScratchPads :: [NamedScratchpad]
 myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
@@ -348,8 +348,7 @@ myFocusedBorderColor = "#ff0000"
 main :: IO ()
 main = do
   xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobarrc"
-  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobarrc"
-  xmproc2 <- spawnPipe "xmobar -x 2 $HOME/.config/xmobar/xmobarrc"
+  xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/no-trayer-xmobarrc"
   xmonad $ addDescrKeys' ((mod4Mask, xK_F1), showKeybindings) myKeys $ ewmh $ docks $ def
     {manageHook         = myManageHook <+> manageDocks
     , modMask            = myModMask
@@ -362,7 +361,6 @@ main = do
     , focusedBorderColor = myFocusColor    , logHook = dynamicLogWithPP $  filterOutWsPP [scratchpadWorkspaceTag] $ xmobarPP
         { ppOutput = \x -> hPutStrLn xmproc0 x   -- xmobar on monitor 1
                         >> hPutStrLn xmproc1 x   -- xmobar on monitor 2
-                        >> hPutStrLn xmproc2 x   -- xmobar on monitor 3
         , ppCurrent = xmobarColor color05 "" . wrap "[" "]"
           -- Visible but not current workspace
         , ppVisible = xmobarColor color05 "" . clickable
