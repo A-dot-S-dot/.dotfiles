@@ -1,9 +1,8 @@
-# Add path for Doom Emacs
-PATH="$HOME/.emacs.d/bin:$PATH"
-
-
 # Use caps lock as ctrl
 setxkbmap -option ctrl:nocaps
 
 # make short-pressed Ctrl behave like Escape
 xcape -e 'Control_L=Escape'
+
+# xrandr
+xrandr --output DP-0 --mode 1920x1080 --primary
