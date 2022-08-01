@@ -95,7 +95,7 @@ websearch[googleOpenSource]="https://opensource.google/projects/search?q="
 websearch[sourceforge]="https://sourceforge.net/directory/?q="
 websearch[stackoverflow]="https://stackoverflow.com/search?q="
 # Science
-websearch[googleScholar]="https://scholar.google.com/scholar?hl=de&as_sdt=0%25252C5&q="
+websearch[scholar]="https://scholar.google.com/scholar?hl=de&as_sdt=0%25252C5&q="
 
 # dm-currencies config
 
