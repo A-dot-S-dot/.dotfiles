@@ -2,8 +2,9 @@ function! custom#GetRandomPageName() abort
   return printf("0x%08x", str2nr(strftime('%s')))
 endfunction
 
-function! custom#RemoveUnderscores(ctx, text) abort
-  return substitute(a:ctx.name, '_', ' ', 'g')
+function! custom#CreateTitle(ctx, text) abort
+  let l:title = substitute(a:ctx.name, '_', ' ', 'g')
+  return cases#capitalize(l:title)
 endfunction
 
 function! custom#OpenWikiPage() abort
@@ -23,8 +24,9 @@ function! custom#OpenWikiPage() abort
 endfunction
 
 function! s:transform(entry) abort
-  " Remove '_' and '/'
-  return substitute(substitute(a:entry, '_', ' ', 'g'), '^/', '', 'g')
+  let l:entry = substitute(a:entry, '_', ' ', 'g')
+  let l:entry = substitute(l:entry, '^/', '', 'g')
+  return cases#capitalize(l:entry)
 endfunction
 
 function! s:open_page(lines) abort
