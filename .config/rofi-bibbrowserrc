@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+import os
+
+# the rofi-bibbrowser config is a python file that is loaded
+# before the main function is called and after all the functions
+# have been defined. So here, you can overwrite arbitrary
+# variables and functions
+
+rofi_command = ['rofi' , '-dmenu', '-p', 'Choose reference:', '-i']
+rofi_command += ['-theme-str', 'window {width: 70%;}', '-l', '7']
+
+yank_key = 'Control+y'
+edit_bib_key = 'Control+i'
+yank_file_path_key = 'Control+x'
+
+bib_dirs = [BibDir('~/Nextcloud/Library/bibliography.bib')]

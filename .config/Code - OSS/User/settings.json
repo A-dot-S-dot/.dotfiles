@@ -1,0 +1,13 @@
+{
+  "editor.lineNumbers": "relative",
+  "workbench.colorTheme": "Nord",
+  "editor.cursorBlinking": "solid",
+  "python.analysis.typeCheckingMode": "basic",
+  "[python]": {
+    "editor.rulers": [
+      100
+    ]
+  },
+  "editor.formatOnSave": true,
+  "files.saveConflictResolution": "overwriteFileOnDisk"
+}

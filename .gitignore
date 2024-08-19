@@ -1,0 +1,6 @@
+*.log
+__pycache__/
+
+;; firefox
+.config/firefox/*
+!.config/firefox/user.js

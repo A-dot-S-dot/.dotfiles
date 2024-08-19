@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+
+usage () {
+  echo "Usage: $0 [options...]"
+  echo
+  echo "options:"
+  echo "  -i  Install software"
+  echo "  -u  Update keyrings"
+  echo
+  echo "  -s  Create symlinks"
+  echo "  -m  Setup mail"
+  echo "  -p  Setup pass"
+  echo "  -t  Setup themes"
+  echo
+  echo "  -h  Show this help"
+  echo
+  exit 0
+}
+
+install () {
+  echo "######################################################################"
+  echo "Install base software"
+  echo "######################################################################"
+  if ! [ -f /sbin/paru ]; then
+    mkdir -pv ~/.local/lib
+    cd ~/.local/lib
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si
+  fi
+
+  paru -Suy --needed \
+    abook \
+    adobe-source-code-pro-fonts \
+    alsa-utils \
+    base-devel \
+    bat \
+    biber \
+    bluez \
+    bluez-utils \
+    brightnessctl \
+    ca-certificates \
+    code \
+    cups \
+    curl \
+    dialog \
+    dosfstools \
+    dropbox \
+    efibootmgr \
+    eza \
+    feh \
+    firefox \
+    fish \
+    htop-vim \
+    hyprland-nvidia \
+    hyprshade \
+    gettext \
+    gnome-themes-extra \
+    grim \
+    grub \
+    gvfs \
+    gvim \
+    inter-font \
+    isync \
+    kitty \
+    linux \
+    linux-headers \
+    linux-firmware \
+    lolcat \
+    lvm2 \
+    lxappearance \
+    lynx \
+    make \
+    mako \
+    man-db \
+    man-pages \
+    msmtp \
+    mtools \
+    neomutt \
+    netctl \
+    network-manager-applet \
+    networkmanager \
+    nextcloud-client \
+    nm-connection-editor \
+    nodejs-lts-iron \
+    nordic-theme \
+    notmuch \
+    noto-fonts \
+    noto-fonts-emoji \
+    npm \
+    openconnect \
+    openssh \
+    os-prober \
+    otf-sora \
+    pacman-contrib \
+    pamixer \
+    papirus-icon-theme \
+    pass \
+    pcmanfm \
+    pdfarranger \
+    pipewire \
+    pipewire-alsa \
+    pipewire-jack \
+    pipewire-pulse \
+    playerctl \
+    polkit-kde-agent \
+    polybar \
+    python311 \
+    python-requests \
+    qt5-wayland \
+    qt6-wayland \
+    ranger \
+    rofi-lbonn-wayland-only-git \
+    sddm \
+    signal-desktop \
+    slurp \
+    spotify \
+    sshfs \
+    starship \
+    stow \
+    swappy \
+    swaybg \
+    swayidle \
+    swaylock-effects \
+    system-config-printer \
+    tessen \
+    texlive \
+    texlive-langenglish \
+    texlive-langgerman \
+    textidote-bin \
+    translate-shell \
+    trizen \
+    ttf-iosevka \
+    ttf-nerd-fonts-symbols \
+    udiskie \
+    urlview \
+    vlc \
+    waybar \
+    wlogout \
+    xdg-desktop-portal-hyprland \
+    wireless_tools \
+    wireplumber \
+    wl-clipboard \
+    wpa_supplicant \
+    wtype \
+    xdo \
+    xorg-server \
+    zathura \
+    zathura-djvu \
+    zathura-pdf-poppler
+    # sof-firmware for music maybe
+
+  # Install tempaltes for pandoc
+  echo
+  curl 'https://raw.githubusercontent.com/ryangrose/easy-pandoc-templates/master/copy_templates.sh' | bash
+
+  # Install npm packages
+  echo
+  npm install -g browser-sync
+
+  echo
+  sudo mandb # update man database
+
+  sudo systemctl enable --now bluetooth
+  sudo systemctl enable --now cups
+  sudo systemctl enable --now NetworkManager
+  sudo systemctl enable --now sddm
+  sudo systemctl enable --now sshd
+
+  pkill -SIGRTMIN+8 waybar
+  echo
+}
+
+symlink () {
+  echo "######################################################################"
+  echo "Symlink files and make dirs"
+  echo "######################################################################"
+  mkdir -pv ~/Downloads
+  mkdir -pv ~/.vim
+  mkdir -pv ~/.themes
+  mkdir -pv ~/.local/bin
+  mkdir -pv ~/.local/lib
+  mkdir -pv ~/.local/share/mail/alexeyschwarzmann@posteo.de
+  mkdir -pv ~/.local/share/mail/alexey.schwarzmann@math.tu-dortmund.de
+  mkdir -pv ~/.local/share/mail/vorstand.s-kinderhaus@outlook.de
+  mkdir -pv ~/.cache/neomutt/alexeyschwarzmann@posteo.de
+  mkdir -pv ~/.cache/neomutt/alexey.schwarzmann@math.tu-dortmund.de
+  mkdir -pv ~/.config/systemd/user
+  mkdir -pv ~/.config/Code\ -\ OSS/User
+  mkdir -pv ~/.config/waybar/scripts
+  mkdir -pv ~/.config/neomutt
+  mkdir -pv ~/.npm-global
+
+  if ! [ -L ~/.bashrc ] || ! [ -e ~/.bashrc ]; then
+    rm -fv ~/.bashrc
+  fi
+  if ! [ -L ~/.config/kitty ] || ! [ -d ~/.config/kitty ]; then
+    rm -frv ~/.config/kitty
+  fi
+
+  stow -v -d ~/.dotfiles -t $HOME --ignore="setup" .
+  if [[ -d ~/Nextcloud ]]; then
+    ~/Nextcloud/.dotfiles/create-symlinks
+  fi
+  echo
+}
+
+setup_pass () {
+  echo "######################################################################"
+  echo "Setup pass"
+  echo "######################################################################"
+  gpg --import ~/.dotfiles/secret.gpg
+  git clone git@github.com:A-dot-S-dot/.password-store.git ~/.password-store
+  echo
+}
+
+setup_mail () {
+  echo "######################################################################"
+  echo "Setup mail"
+  echo "######################################################################"
+  ~/.local/bin/get-mail -sn
+  echo
+}
+
+setup_themes () {
+  echo "######################################################################"
+  echo "Install themes"
+  echo "######################################################################"
+  echo "Please use lxappearance to choose your favourite cursor and icon theme."
+  lxappearance
+  ~/.local/bin/setbg
+  echo
+}
+
+while getopts "iuspmt" arg; do
+  case $arg in
+    i) install;;
+    u) pacman-key --refresh-keys;;
+    s) symlink;;
+    p) setup_pass;;
+    m) setup_mail;;
+    t) setup_themes;;
+    *) usage;;
+  esac
+done
+
+if [ $OPTIND -eq 1 ]; then usage; fi

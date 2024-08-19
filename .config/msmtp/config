@@ -1,0 +1,35 @@
+account alexey.schwarzmann@math.tu-dortmund.de
+host smtp.mathematik.tu-dortmund.de
+port 587
+from alexey.schwarzmann@math.tu-dortmund.de
+user aschwar2
+passwordeval "pass work-account"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/alexey/.config/msmtp/msmtp.log
+# tls_starttls
+
+account alexeyschwarzmann@posteo.de
+host posteo.de
+port 587
+from alexeyschwarzmann@posteo.de
+user alexeyschwarzmann@posteo.de
+passwordeval "pass posteo"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/alexey/.config/msmtp/msmtp.log
+# tls_starttls
+
+account vorstand.s-kinderhaus@outlook.de
+host outlook.office365.com
+port 587
+from vorstand.s-kinderhaus@outlook.de
+user vorstand.s-kinderhaus@outlook.de
+passwordeval "pass vorstand.s-kinderhaus"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/alexey/.config/msmtp/msmtp.log
+# tls_starttls

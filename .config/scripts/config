@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# confedit
+declare -A confedit_list
+confedit_list[bash]="$HOME/.bashrc"
+confedit_list[code]="$HOME/.config/Code - OSS/User/settings.json"
+confedit_list[confedit]="$HOME/.config/scripts/config"
+confedit_list[firefox/user.js]="$HOME/.config/firefox/user.js"
+confedit_list[fish]="$HOME/.config/fish/config.fish"
+confedit_list[hyprland]="$HOME/.config/hypr/hyprland.conf"
+confedit_list[kitty]="$HOME/.config/kitty/kitty.conf"
+confedit_list[mako]="$HOME/.config/mako/config"
+confedit_list[neomutt]="$HOME/.config/neomutt/neomuttrc"
+confedit_list[rofi]="$HOME/.config/rofi/config.rasi"
+confedit_list[setup]="$HOME/.dotfiles/setup"
+confedit_list[swaylock]="$HOME/.config/swaylock/config"
+confedit_list[tessen]="$HOME/.config/tessen/config"
+confedit_list[waybar]="$HOME/.config/waybar/config.jsonc"
+confedit_list[waybar-style]="$HOME/.config/waybar/style.css"
+confedit_list[wlogout]="$HOME/.config/wlogout/style.css"
+confedit_list[vim]="$HOME/.vimrc"
+confedit_list[zathura]="$HOME/.config/zathura/zathurarc"
+
+# Search engine config
+declare -A websearch
+# Syntax:
+# websearch[name]="https://www.example.com/search?q="
+
+# Search Engines
+websearch[google]="https://www.google.com/search?q="
+websearch[searxng]="https://searx.tiekoetter.com/search?q="
+# Information/News
+websearch[wikipedia-en]="https://en.wikipedia.org/w/index.php?search="
+websearch[wikipedia-de]="https://de.wikipedia.org/w/index.php?search="
+websearch[wiktionary]="https://en.wiktionary.org/w/index.php?search="
+# Social Media
+websearch[youtube]="https://www.youtube.com/results?search_query="
+# Online Shopping
+websearch[amazon]="https://www.amazon.de/s?k="
+websearch[medimops]="https://www.medimops.de/produkte-C0/?fcIsSearch=1&searchparam="
+# Science
+websearch[scholar]="https://scholar.google.com/scholar?hl=de&as_sdt=0%25252C5&q="
+websearch[ub-dortmund]="https://katalog.ub.tu-dortmund.de/search?q="
+websearch[ub-rub]="https://hbz-ubo.primo.exlibrisgroup.com/discovery/search?tab=Everything&search_scope=MyInst_and_CI&vid=49HBZ_UBO:VU1&lang=de&offset=0&query=any,contains,"
+websearch[bib-witten]="https://webopac.stadt-witten.de/Mediensuche/Einfache-Suche?search="
+websearch[scholar]="https://scholar.google.com/scholar?hl=de&as_sdt=0%25252C5&q="
+websearch[mathscinet]="https://mathscinet.ams.org/mathscinet/publications-search?page=1&size=100&sort=citations&facets=&query="
+# Linux
+websearch[archaur]="https://aur.archlinux.org/packages/?O=0&K="
+websearch[archpkg]="https://archlinux.org/packages/?sort=&q="
+websearch[archwiki]="https://wiki.archlinux.org/index.php?search="
+
+# dm-translate config
+declare -A lang_map
+lang_map[de -> en]=de:en
+lang_map[en -> de]=en:de
+# lang_map[auto -> de]=:de

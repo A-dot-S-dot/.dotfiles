@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+DIR=build/
+cd ~/Nextcloud/Notes/Wiki/
+
+make
+MDS=(*.md)
+
+for file in $DIR/*; do
+  target=${file##*/}   # Remove path
+  target="${target%.html}"  # Remove Extension
+  target=$target.md         # Add another extension
+  for md in ${MDS[@]}; do
+    keep=0
+    if [[ "$md" == "$target" ]]; then
+      keep=1
+      break
+    fi
+  done
+  if [[ $keep -eq 0 ]]; then
+    rm -v $file
+  fi
+done
+
+WIKI_PAGE="$(ls $DIR | sed -e 's/\.html$//' | sed -e 's/_/ /g' | rofi -dmenu -p "Choose Wiki Page:" -theme-str 'window {width: 50%;}' -l 10 -i)"
+
+if [ -z $WIKI_PAGE ]; then
+  exit 1
+else
+  WIKI_PAGE=${WIKI_PAGE// /_}
+  firefox $DIR$WIKI_PAGE.html
+fi

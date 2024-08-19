@@ -1,0 +1,30 @@
+{
+    "label" : "lock",
+    "action" : "swaylock",
+    "text" : "Lock",
+    "keybind" : "l"
+}
+{
+    "label" : "reboot",
+    "action" : "systemctl reboot",
+    "text" : "Reboot",
+    "keybind" : "r"
+}
+{
+    "label" : "poweroff",
+    "action" : "systemctl poweroff",
+    "text" : "Poweroff",
+    "keybind" : "p"
+}
+{
+    "label" : "exit",
+    "action" : "hyprctl dispatch exit 0",
+    "text" : "Exit Hyprland",
+    "keybind" : "e"
+}
+{
+    "label" : "suspend",
+    "action" : "systemctl suspend && swaylock",
+    "text" : "Suspend",
+    "keybind" : "s"
+}

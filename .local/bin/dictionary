@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+source "${HOME}/.config/scripts/config"
+
+# Get word
+lang_code=$(printf "English\nEnglish->German\nGerman->English" | rofi -dmenu -p "" -l 3)
+
+case "$lang_code" in
+  "English")
+    prompt=" (en)"
+    lang_code="en:en";;
+  "English->German")
+    prompt=" (en->de)"
+    lang_code="en:de";;
+  "German->English")
+    prompt=" (de->en)"
+    lang_code="de:en";;
+  *) exit 1;;
+esac
+
+keyword=$(echo "" | rofi -dmenu -p "$prompt" -l 0)
+
+if ! [ -z "$keyword" ]; then
+  kitty trans -pager "less -R" $lang_code "$keyword"
+fi
