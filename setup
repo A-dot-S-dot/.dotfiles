@@ -52,7 +52,7 @@ install () {
     firefox \
     fish \
     htop-vim \
-    hyprland \
+    hyprland-nvidia \
     hyprshade \
     gettext \
     gnome-themes-extra \
@@ -66,8 +66,6 @@ install () {
     linux \
     linux-headers \
     linux-firmware \
-    linux-lts \
-    linux-lts-headers \
     lolcat \
     lvm2 \
     lxappearance \

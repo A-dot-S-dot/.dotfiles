@@ -48,10 +48,8 @@ tooltip label {
 #tray,
 #custom-updates,
 #custom-mail,
-#battery,
 #cpu,
 #disk,
-#backlight,
 #pulseaudio,
 #network {
   background: #2e3440;
@@ -104,12 +102,6 @@ tooltip label {
   margin-right: 5px;
 }
 
-#battery {
-  margin-left: 5px;
-  border-radius: 10px 0px 0px 10px;
-  border-right: 0px;
-}
-
 #battery.discharging {
   color: #a3be8c;
 }
@@ -123,16 +115,12 @@ tooltip label {
 }
 
 #cpu {
-  border-left: 0px;
+  margin-left: 5px;
+  border-radius: 10px 0px 0px 10px;
   border-right: 0px;
 }
 
 #disk {
-  border-right: 0px;
-  border-left: 0px;
-}
-
-#backlight {
   border-right: 0px;
   border-left: 0px;
 }

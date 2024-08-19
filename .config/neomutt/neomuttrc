@@ -195,11 +195,11 @@ bind pager \Ck previous-entry
 macro pager gl "<pipe-entry>'urlview'<enter>" "follow links with urlview"
 
 # Accounts
-source ~/.config/neomutt/accounts/work
-folder-hook $folder 'source ~/.config/neomutt/accounts/work'
-
 source ~/.config/neomutt/accounts/vorstand.s-kinderhaus
 folder-hook $folder 'source ~/.config/neomutt/accounts/vorstand.s-kinderhaus'
 
 source ~/.config/neomutt/accounts/posteo
 folder-hook $folder 'source ~/.config/neomutt/accounts/posteo'
+
+source ~/.config/neomutt/accounts/work
+folder-hook $folder 'source ~/.config/neomutt/accounts/work'
