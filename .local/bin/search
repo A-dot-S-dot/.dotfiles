@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+source "${HOME}/.config/scripts/config"
+
+engine=$(printf "$(printf '%s\n' "${!websearch[@]}")" | sort | rofi -dmenu -p 'Choose search engine:' )
+
+if [ -z "$engine" ]; then
+  exit 1
+else
+  url="${websearch["${engine}"]}"
+  query=$(echo "$engine" | rofi -dmenu -p 'Enter search query:' -l 0)
+  if [ -z "$query" ]; then
+    exit 1
+  else
+    firefox "${url}${query}"
+  fi
+fi

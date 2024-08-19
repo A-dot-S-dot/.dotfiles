@@ -1,0 +1,24 @@
+configuration {
+  font: "JetBrainsMono Font Medium 14";
+  line-margin: 10;
+  drun-display-format: "{icon} {name}";
+  modi: "drun,run,window";
+
+  display-ssh:    "";
+  display-drun:   "";
+  display-window: "";
+  display-combi:  "";
+  display-calc:   "";
+  show-icons:     true;
+  icon-theme: "Papirus";
+
+  kb-mode-complete: "";
+  kb-remove-to-eol: "";
+  kb-secondary-copy: "";
+  kb-row-up: "Up,Control+k";
+  kb-row-down: "Down,Control+j";
+  kb-accept-entry: "Return,Control+l";
+  kb-cancel: "Escape,Control+c";
+}
+
+@theme "nord"

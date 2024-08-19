@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+cd ~/Nextcloud/Notes/Wiki/
+kitty vim -c "WikiPages"

@@ -1,0 +1,149 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: JetBrainsMono Font, monospace;
+  font-weight: bold;
+  font-size: 14px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(21, 18, 27, 0);
+  color: #eceff4;
+}
+
+tooltip {
+  background: #2e3440;
+  border-radius: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #3b4252;
+}
+
+tooltip label {
+  color: #eceff4;
+  text-shadow: none;
+}
+
+#workspaces button {
+  padding: 5px;
+  color: #4c566a;
+  margin-right: 5px;
+}
+
+#workspaces button.active {
+  color: #eceff4;
+}
+
+#workspaces button:hover {
+  background: #434c5e;
+  color: #e5e9f0;
+  border-radius: 10px;
+}
+
+#clock,
+#custom-weather,
+#workspaces,
+#window,
+#tray,
+#custom-updates,
+#custom-mail,
+#battery,
+#cpu,
+#disk,
+#backlight,
+#pulseaudio,
+#network {
+  background: #2e3440;
+  color: #eceff4;
+  padding: 0px 10px;
+  margin: 3px 0px;
+  margin-top: 10px;
+  border: 1px solid #3b4252;
+}
+
+#clock {
+  border-radius: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#custom-weather {
+  border-radius: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#workspaces {
+  border-radius: 10px;
+  margin-left: 5px;
+  padding-right: 0px;
+  padding-left: 5px;
+}
+
+#window {
+  border-radius: 10px;
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
+#tray {
+  border-radius: 10px;
+  margin-right: 5px;
+}
+
+#custom-updates {
+  border-radius: 10px 0px 0px 10px;
+  border-right: 0px;
+  margin-left: 5px;
+}
+
+#custom-mail {
+  border-radius: 0px 10px 10px 0px;
+  border-left: 0px;
+  margin-right: 5px;
+}
+
+#battery {
+  margin-left: 5px;
+  border-radius: 10px 0px 0px 10px;
+  border-right: 0px;
+}
+
+#battery.discharging {
+  color: #a3be8c;
+}
+
+#battery.discharging.warning {
+  color: #d08770;
+}
+
+#battery.discharging.critical {
+  color: #bf616a;
+}
+
+#cpu {
+  border-left: 0px;
+  border-right: 0px;
+}
+
+#disk {
+  border-right: 0px;
+  border-left: 0px;
+}
+
+#backlight {
+  border-right: 0px;
+  border-left: 0px;
+}
+
+#pulseaudio {
+  border-left: 0px;
+  border-right: 0px;
+}
+
+#network {
+  border-radius: 0px 10px 10px 0px;
+  border-left: 0px;
+  margin-right: 5px;
+}

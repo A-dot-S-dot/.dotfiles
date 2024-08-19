@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+source "${HOME}/.config/scripts/config"
+declare -A _clean_list
+
+for i in "${!confedit_list[@]}"; do
+  [[ -f ${confedit_list["${i}"]} ]] && _clean_list["${i}"]=${confedit_list["${i}"]}
+done
+
+choice=$(printf '%s\n' "${!_clean_list[@]}" | sort | rofi -dmenu -p '')
+
+if [ "$choice" ]; then
+  cfg=$(printf '%s\n' "${_clean_list["${choice}"]}")
+  kitty vim "$cfg"
+else
+  echo "Program terminated." && exit 0
+fi

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+setbg_dir="${HOME}/Pictures/Wallpapers/"
+
+setbg() {
+  ln -sf $1 ~/.themes/background
+  hyprctl reload
+  notify-send "Set new wallpaper" "$(basename -- $wallpaper)"
+}
+
+choice="$(printf "Set\nRandom" | rofi -dmenu -L 2 -p "What would you like to do?")"
+case "$choice" in
+  "Set")
+    wallpaper="$(ls $setbg_dir | rofi -dmenu -p "Choose a wallpaper:")"
+    setbg $setbg_dir$wallpaper
+  ;;
+  "Random")
+  valid_paper="No"
+  until [ "$valid_paper" = "Yes" ] || [ -z "$valid_paper" ]; do
+    wallpaper="$(find "${setbg_dir}" -type f | shuf -n 1)"
+    setbg "$wallpaper"
+    echo "$wallpaper" > "$HOME/.cache/wall"
+    valid_paper="$(printf "Yes\nNo\nDelete" | \
+      rofi -dmenu -L 3 -p "Do you like the new wallpaper?" --cache-file=/dev/null)"
+    if [ $valid_paper = "Delete" ]; then
+      rm -f $wallpaper
+    fi
+  done
+  ;;
+esac

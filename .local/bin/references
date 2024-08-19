@@ -1,0 +1,690 @@
+#!/usr/bin/env python3.11
+import subprocess
+import struct
+import re
+import sys
+import os
+import argparse
+import traceback
+import shutil
+from pathlib import Path
+
+BIBLIB_DIR = os.path.join(os.path.dirname(Path(__file__).resolve()), 'biblib')
+sys.path.append(BIBLIB_DIR)
+import biblib.bib
+import biblib.algo
+
+
+# accepts a list of strings and returns the index of the selected menu entry
+# or None otherwise
+def call_rofi(entries, additional_args=[]):
+    additional_args.extend([ '-sep', '\\0', '-format', 'i' ])
+    proc = subprocess.Popen(rofi_command + additional_args,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE)
+    for e in entries:
+        proc.stdin.write((e).encode('utf-8'))
+        proc.stdin.write(struct.pack('B', 0))
+    proc.stdin.close()
+    answer = proc.stdout.read().decode("utf-8")
+    exit_code = proc.wait()
+    # trim whitespace
+    answer = re.sub('[ \n]', '', answer)
+    if answer == '':
+        return None,exit_code
+    else:
+        return int(answer),exit_code
+
+class Rofi:
+    def __init__(self):
+        self.keybinds = []
+        self.menuitems = []
+
+    def add_item(self, data, label):
+        self.menuitems.append((data, label))
+
+    def add_keybind(self, data, key, helptext):
+        self.keybinds.append((data, key, helptext))
+
+    def call(self, mesg = '', args=[]):
+        """call rofi, and return a tuple (itemselected, key_pressed)
+        where:
+          - itemselected is the 'data' of the menu item selected or None if
+            no item was selected (Escape pressed or error)
+          - key_pressed is the data of the keybinding or None if no keybind was
+            involved when selecting the menu item
+        """
+        rofi_args = []
+        message = (mesg + '\n').lstrip('\n')
+        for idx, (_, key, desc) in enumerate(self.keybinds):
+            rofi_args += [ '-kb-custom-{}'.format(idx + 1), key ]
+            message += ('%-10s: %s\n' % (key, desc))
+        rofi_args += ['-mesg', message.rstrip('\n')]
+        rofi_args += args
+        menu = [label for _, label in self.menuitems]
+        idx, exit_code = call_rofi(menu, additional_args=rofi_args)
+        item_selected = None
+        key_pressed = None
+        if idx is not None and idx >= 0 and idx < len(self.menuitems):
+            item_selected = self.menuitems[idx][0]  # the 'data' field
+        # only allow exit code 0 and something within 10 and 125
+        # because exit codes from 126 on have special meanings
+        if exit_code >= 10 and exit_code <= 125 and exit_code - 10 < len(self.keybinds):
+            key_pressed = self.keybinds[exit_code - 10][0]
+        else:
+            # if no keybind was pressed, then only exit code '0'
+            # indicates that an item was selected correctly
+            if exit_code != 0:
+                item_selected = None
+        return item_selected, key_pressed
+
+def fix_string(string):
+    try:
+        return biblib.algo.tex_to_unicode(string)
+    except biblib.messages.InputError as e:
+        print("Warning: invalid tex string: »{}«:".format(string), file=sys.stderr, end='')
+        for _,msg in e.args[0]:
+            print(" {}".format(msg), end='', file=sys.stderr)
+        print("", file=sys.stderr)
+        return string
+
+def reorder_author_name(author):
+    parts = author.split(', ')
+    parts.reverse()
+    return ' '.join(parts)
+
+def format_author(author):
+    author = fix_string(author)
+    authors = author.split(' and ')
+    authors = [ reorder_author_name(i) for i in authors ]
+    return ', '.join(authors)
+
+def find_files(directory):
+    """
+    Here we only follow symlinks that are explicitly given on the command line,
+    but not follow nested symlinks.
+
+    The returned files are sorted by last modification date
+    """
+    cmd = [ 'find' , '-H', directory, '-type', 'f', '-printf', '%Ts %P\\0' ]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    byte_string = proc.stdout.read().split(b'\0')
+    byte_string = filter(None, byte_string) # remove empty (byte)strings from list
+    files = list(map(lambda x: x.decode('utf-8', errors='replace').split(' ', 1), byte_string))
+    for f in files:
+        f[0] = -1 * int(f[0])
+    files.sort()
+    files[:] = [f[1] for f in files]
+    return files
+
+def filenameAuthorsYearTitle(entry):
+    authors = fix_string(entry.get('author', ''))
+    authors = authors.split(' and ')
+    lastnames = []
+    # get last names of authors
+    for i, name in enumerate(authors):
+        s = reorder_author_name(name)
+        if (s == ''):
+            continue
+        s = s.rsplit(None, 1)
+        if (len(s) > 1):
+            lastnames.append(s[-1])
+        else:
+            lastnames.append(s[0])
+    year = entry.get('date', '')
+    title = re.sub(':', '', fix_string(entry.get('title', '')))
+    if len(lastnames) > 0 and bool(year):
+        first_sep = ' '
+    else:
+        first_sep = ''
+    part1 = ','.join(lastnames) + first_sep + year
+    if bool(part1) and bool(title):
+        # if first half of the string and the title is non-empty:
+        second_sep = ': '
+    else:
+        second_sep = ''
+    # crop punctation marks from the end of the title
+    return  part1 + second_sep + re.sub('[\.,!]*$', '', title)
+
+def filenameBibID(entry):
+    if 'ID' in entry:
+        return entry['ID']
+    else:
+        return None
+
+def filenameFromURL(entry):
+    if 'link' in entry:
+        url = entry['link']
+        url = re.sub('^.*/', '', url)
+        if not re.match( r'.*\.pdf$', url, flags=re.I):
+            return None
+        url = re.sub('\.pdf$', '', url, flags=re.I)
+        return url
+    return None
+
+
+def filenameFromArxivURL(entry):
+    # we do only start with :// because we are using 're.search' anyway!
+    arxiv_url_re = re.compile(
+        r'://arxiv.org/[a-z]*/([0-9\.]*)(v[0-9]*)?',
+        flags=re.IGNORECASE)
+    for fieldkey, fieldvalue in entry.items():
+        match = arxiv_url_re.search(fieldvalue)
+        if match:
+            filename = match.group(1)
+            # print(f"returning: {filename}")
+            return filename
+    return None
+
+
+filename_generators = [
+        filenameAuthorsYearTitle,
+        filenameFromArxivURL,
+        filenameBibID,
+        filenameFromURL,
+    ]
+
+# for a bibtex entry -- as a dictionary -- return a list of possible filenames
+def generate_filenames(entry):
+    for generator in filename_generators:
+        result = generator(entry)
+        if result != None:
+            yield re.sub('/', '', result)
+
+# gets a list of filenames (relative to the document_dir) and returns a list of
+# files of documents only
+def filter_documents(filenames):
+    r = re.compile('.*\.(pdf|djvu)$', re.IGNORECASE)
+    return list(filter(r.match, filenames))
+
+def document_name_from_path(path):
+    _, basename = os.path.split(path)
+    return os.path.splitext(basename)[0]
+
+# dictionary that maps document names to bibtex entries
+doc_name_to_entry = { };
+def link_doc_name_to_entry(doc_name, entry):
+    if doc_name in doc_name_to_entry:
+        sys.stderr.write("Warning: " + doc_name + " links to multiple entries")
+    doc_name_to_entry[doc_name] = entry
+
+def link_path_to_entry(path):
+    doc_name = document_name_from_path(path)
+    if doc_name in doc_name_to_entry:
+        entry = doc_name_to_entry[doc_name]
+        entry['_filepaths'].append(path)
+        return True
+    return False
+
+def open_file(path):
+    _, file_extension = os.path.splitext(path)
+
+    if file_extension in [".pdf", ".djvu"]:
+        subprocess.Popen(["zathura", path])
+    elif file_extension==".bib":
+        subprocess.Popen(["kitty", "vim", path])
+    else:
+        raise ValuerError("File extension '{file_extension}' not specified")
+
+def move_document(oldpath, newpath):
+    mv = subprocess.Popen(['mv', '--verbose', '--no-clobber', oldpath, newpath])
+    mv.wait
+
+def to_clipboard(string):
+    commands = [
+        ['wl-copy'],
+    ]
+    for cmd in commands:
+        p = subprocess.Popen(cmd,
+                         stdin = subprocess.PIPE)
+        p.stdin.write(string.encode('utf-8'))
+        p.stdin.close()
+
+
+def read_clipboard():
+    p = subprocess.Popen(['wl-paste'],
+                         stdout=subprocess.PIPE,
+                         universal_newlines=True)
+    return p.stdout.read()
+
+
+# gets a list of tuples (key, description)
+# and returns a pango-formatted description of the keybindings
+def format_keybinding_message(bindings):
+    out = ''
+    for key,desc in bindings:
+        if bool(out):
+            out += '\n'
+        out += ('%-10s: %s' % (key,desc))
+    return out
+
+
+class BibImport:
+    def __init__(self, name, url_re):
+        self.name = name
+        self.url_re = re.compile(url_re)
+
+    def can_handle(self, url):
+        """return whether the given url can be handled. If yes return a match object."""
+        return self.url_re.match(url)
+
+    def download(self, url_match):
+        """given a url_match, print some info about the given url.
+        The url_match has to be a match of the url_re passed to __init__().
+        """
+        pass
+
+
+class AcmDigitalLibraryImport(BibImport):
+    def __init__(self):
+        super(AcmDigitalLibraryImport, self).__init__(
+            "ACM Digital Library",
+            "https://dl\.acm\.org/citation\.cfm\?id=([0-9]*)")
+
+    def download(self, url_match):
+        article_id = int(url_match.group(1))
+        bib_url = 'https://dl.acm.org/exportformats.cfm?id={}&expformat=bibtex'\
+                  .format(article_id, article_id)
+        print("")
+        print("bibtex url: " + bib_url + "")
+        print("")
+
+
+class ScienceDirectImport(BibImport):
+    def __init__(self):
+        super(ScienceDirectImport, self).__init__(
+            "ScienceDirect",
+            "https://www.sciencedirect.com/science/article/pii/(S[0-9]*)")
+
+    def download(self, url_match):
+        article_id = url_match.group(1)
+        domain = 'https://www.sciencedirect.com'
+        baseurl = domain + "/sdfe/arp/cite"
+        args = {
+            'pii': article_id,
+            'format': 'text/x-bibtex',
+            'withabstract': 'false',
+        }
+        pdf_url = domain + f'/science/article/pii/{article_id}/pdfft?pid=1-s2.0-{article_id}-main.pdf'
+        bib_url = baseurl + '?' + '&'.join([f'{k}={v}' for k, v in args.items()])
+        print("")
+        print("bibtex url: " + bib_url + "")
+        print("pdf url: " + pdf_url + "")
+        print("")
+
+
+class BibDocument:
+    """ A bib document is an entry in a .bib file or a PDF file
+    or a combination of those
+    """
+    def __init__(self, bibdir):
+        self.bibdir = bibdir # the owner of this of type BibDir
+        self.filepaths = []  # files in the file system
+        self.bibtex = None  # possibly a bibtex entry object
+
+    def relpath(self):
+        if len(self.filepaths) > 0:
+             return os.path.relpath(self.filepaths[0], self.bibdir.dirpath)
+        return None
+
+
+def format_bib_entry(e: BibDocument):
+    """Format the a BibDocument item"""
+    if e.bibtex is not None:
+        b = e.bibtex
+        year = b.get('date', '')
+        edition = b.get('edition', '')
+
+        s = fix_string(b.get('title', b.get('ID', '?')))
+
+        if edition != '':
+            s += ', ' + edition + '. Edition'
+
+        s += ' (' + b.typ.capitalize() + ')\n'
+        s += format_author(b.get('author', b.get('editor', '?')))
+
+        if year != '':
+            s += ' (' + year + ')'
+        if len(e.filepaths) > 0:
+            s += ' '
+        return s
+    else:
+        return e.relpath()
+
+def fail(message):
+    print(message, file=sys.stderr)
+    print("Fatal error, exiting. Here is a stacktrace:\n", file=sys.stderr)
+    traceback.print_stack(file=sys.stderr)
+    sys.exit(1)
+
+class BibDir:
+    """ A directory holding bib files and PDFs"""
+    def __init__(self,
+                 path,  # the path to a .bib-file or a directory
+                 bib=None,  # a path to a separate .bib-file if 'path' is a directory
+                 expanduser=True,  # run os.path.expanduser() on the path and bib
+                 ):
+        if expanduser:
+            path = os.path.expanduser(path)
+            if bib is not None:
+                bib = os.path.expanduser(bib)
+
+        if os.path.isfile(path) and bib is None:
+            bib = path
+            path = os.path.dirname(path)
+        if not os.path.exists(path):
+            fail("The path »{}« does not exist!".format(path))
+        if not os.path.exists(bib):
+            fail("The bib path »{}« does not exist!".format(path))
+        if not os.path.isabs(bib):
+            # treat path to bibfile relative to base dir
+            bib = os.path.join(dir, bib)
+        self.dirpath = path
+        self.bib = bib
+        self.documents = []  # a array of BibDocument objects
+        self.bib_database = None  # database from biblib library
+
+    def load(self):
+        # reset
+        self.bib_database = None
+        # map guessed filenmaes to BibDocument objects
+        guessfilename2bibdoc = {}
+
+        # read bib file
+        with open(self.bib) as bibtex_file:
+            try:
+                # Load databases
+                parser = biblib.bib.Parser()
+                db = parser.parse(bibtex_file,
+                                  log_fp=sys.stderr)
+                db = db.get_entries()
+                #db = biblib.bib.resolve_crossrefs(db)
+                self.bib_database = db
+            except biblib.messages.InputError:
+                sys.exit(1)
+
+        # create BibDocument objects
+        for e in self.bib_database.values():
+            e['_filenames'] = list(generate_filenames(e))
+            e['_filepaths'] = []
+            bd = BibDocument(self)
+            bd.bibtex = e
+            self.documents.append(bd)
+            for filename in e['_filenames']:
+                if filename not in guessfilename2bibdoc:
+                    guessfilename2bibdoc[filename] = []
+                guessfilename2bibdoc[filename].append(bd)
+
+        # read files and try to link to bibtex entries:
+        for relpath in filter_documents(find_files(self.dirpath)):
+            absolute_path = os.path.join(self.dirpath, relpath)
+            filename = document_name_from_path(relpath)
+            bibdocs = guessfilename2bibdoc.get(filename, [])
+            if len(bibdocs) >= 1:
+                if len(bibdocs) >= 2:
+                    sys.stderr.write("Warning: multiple bibtex entries for: " + relpath)
+                bibdocs[0].filepaths.append(absolute_path)
+                bibdocs[0].bibtex['_filepaths'].append(relpath)
+            else:
+                # no bibtex entry for the file 'path' yet
+                # so create new entry
+                bd = BibDocument(self)
+                bd.filepaths.append(absolute_path)
+                self.documents.append(bd)
+
+
+def print_default_config():
+    global default_config_imports
+    with open(__file__, 'r') as fh:
+        in_snippet = False
+        print(default_config_imports)
+        begin = '# -- 8< -- SNIP: Default config -- 8< --'
+        end = '# -- 8< -- SNIP END -- 8< --'
+        for l in fh.readlines():
+            if not in_snippet and l.rstrip() == begin:
+                in_snippet = True
+            elif in_snippet and l.rstrip() == end:
+                in_snippet = False
+            elif in_snippet:
+                print(l, end='')
+
+default_config_imports = """\
+#!/usr/bin/env python3
+import os
+"""
+
+###########################################################
+# -- 8< -- SNIP: Default config -- 8< --
+# the rofi-bibbrowser config is a python file that is loaded
+# before the main function is called and after all the functions
+# have been defined. So here, you can overwrite arbitrary
+# variables and functions
+
+rofi_command = [ 'rofi' , '-dmenu']
+rofi_command += [ '-lines', '10', '-i' ]
+
+yank_key = 'Control+y'
+edit_bib_key = 'Control+i'
+yank_file_path_key = 'Control+x'
+
+bib_dirs = [
+    # E.g. do something like:
+    # BibDir('~/literature/refs.bib'),
+    # this will manage the given refs.bib file and lists
+    # all PDFs in ~/literature/
+]
+
+
+# old config: Do not use these!
+#
+# document_dir = '~/uni/literatur'
+# bibfile = document_dir + '/refs.bib'
+#
+# instead add something like
+#    BibDir(document_dir, bib=bibfile),
+# to the above bib_dirs array
+# -- 8< -- SNIP END -- 8< --
+###########################################################
+
+
+home = os.environ['HOME']
+config_dir = os.environ.get('XDG_CONFIG_DIR', home + '/.config/')
+configfile = config_dir + 'rofi-bibbrowserrc'
+
+if os.path.isfile(configfile):
+    exec (compile(open(configfile, "rb").read(), configfile, 'exec'))
+
+
+def try_import(url):
+    bib_importers = [
+        AcmDigitalLibraryImport(),
+        ScienceDirectImport(),
+    ]
+    for b in bib_importers:
+        match = b.can_handle(url)
+        if match:
+            print("Importing {} from {}".format(url, b.name))
+            b.download(match)
+            return
+    print("No bibtex importer found for {}".format(url))
+
+def import_from_dir(source_dir):
+    bib_re = re.compile(r'.*\.bib$')
+    bib_files = [fp for fp in find_files(source_dir) if bib_re.match(fp)]
+
+    def try_parse_or_debug_msg(rofi, source, source_name):
+        parser = biblib.bib.Parser()
+        try:
+            db = parser.parse(source,
+                              log_fp=sys.stderr)
+        except biblib.messages.InputError as e:
+            print(f'Unable to parse {source_name}: {e}', file=sys.stderr)
+            return  # the error has already been printed to the log_fp
+
+        for e in db.get_entries().values():
+            bd = BibDocument(None)
+            bd.bibtex = e
+            label = format_bib_entry(bd)
+            rofi.add_item(bd, source_name + '\n' + label)
+
+    rofi = Rofi()
+    target_bib_dir = get_bib_dirs()[0]
+
+    try_parse_or_debug_msg(rofi, read_clipboard(), '<clipboard>')
+
+    for relpath in bib_files:
+        full_path = os.path.join(source_dir, relpath)
+        with open(full_path) as bibtex_file:
+            try_parse_or_debug_msg(rofi, bibtex_file, relpath)
+
+    message = 'Select bib file for adding to\n'
+    message += '\n' + target_bib_dir.bib
+    bibdoc, _ = rofi.call(mesg=message,
+                           args=['-no-custom', '-eh', '3'])
+
+    if bibdoc is None:
+        print(f'Cancelled by the user', file=sys.stderr)
+        return 1
+
+    pdf_files = filter_documents(find_files(source_dir))
+    rofi = Rofi()
+    for relpath in pdf_files:
+        rofi.add_item(os.path.join(source_dir, relpath), relpath)
+
+    new_filename = list(generate_filenames(bibdoc.bibtex))[0]
+    extension = '.pdf'
+    full_target_path = os.path.join(target_bib_dir.dirpath, new_filename + extension)
+
+    message = 'Pick a document corresponding to the entry:\n\n'
+    message += '  ' + re.sub('\n', '\n  ', format_bib_entry(bibdoc)) + '\n\n'
+    message += 'The selected file will be copied to:\n\n'
+    message += '  ' + full_target_path
+    message += '\n\n'
+
+    pdfpath, _ = rofi.call(mesg=message,
+                           args=['-no-custom', '-eh', '1'])
+    if pdfpath is None:
+        print(f'Cancelled by the user', file=sys.stderr)
+        return 1
+
+    with open(target_bib_dir.bib, 'a') as fh:
+        print(f'Appending entry to \'{target_bib_dir.bib}\'', file=sys.stderr)
+        print('', file=fh)
+        print(bibdoc.bibtex.to_bib(month_to_macro=False,wrap_width=None), file=fh)
+        print('', file=fh)
+    if os.path.exists(full_target_path):
+        print(f'File \'{full_target_path}\' already exists, skipping!', file=sys.stderr)
+    else:
+        shutil.copyfile(pdfpath, full_target_path)
+        print(f'cp \'{pdfpath}\' \'{full_target_path}\'', file=sys.stderr)
+
+
+def get_bib_dirs():
+    """get the list of bib directories, and assert
+    that the list is non-empty.
+    But do not load the bib directories yet."""
+    global bib_dirs
+    if len(bib_dirs) == 0:
+        bib_dirs = [BibDir(document_dir, bib=bibfile)]
+    if len(bib_dirs) == 0:
+        print(f'No bib directories defined, cancelling!', file=sys.stderr)
+        sys.exit(1)
+    return bib_dirs
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Access your bibliography with rofi')
+    parser.add_argument('--default-config',
+                        default=False, action='store_true',
+                        help='print default config and exit')
+    # --import-dir is superior and more flexible
+    # parser.add_argument('--import',
+    #                     metavar='URL',
+    #                     dest='importurl',
+    #                     help='import a bibtex and pdf from online publisher')
+
+    parser.add_argument('--import-dir',
+                        metavar='DIR',
+                        help='import an entry from pdf and bib files in a directory')
+
+    args = parser.parse_args()
+    if args.default_config:
+        print_default_config()
+        return 0
+
+    # disabled because not mature and because import_dir is superior
+    # if args.importurl is not None:
+    #     try_import(args.importurl)
+    #     return 0
+
+    if args.import_dir is not None:
+        import_from_dir(args.import_dir)
+        return 0
+
+    bib_dirs = get_bib_dirs()
+
+    all_documents = []
+    for bibdir in bib_dirs:
+        bibdir.load()
+        all_documents += bibdir.documents
+
+    # call rofi
+    keybindings = [
+                [ yank_key, 'Copy bibtex source' ],
+                [ edit_bib_key, 'Edit bibtex file' ],
+                [ yank_file_path_key, 'Copy file path' ],
+              ]
+    rofi = Rofi()
+    for [key, helptext] in keybindings:
+        rofi.add_keybind(key, key, helptext)
+
+    for doc in all_documents:
+        label = format_bib_entry(doc)
+        rofi.add_item(doc, label)
+
+    bibdoc, key = rofi.call(mesg='Select a document to open it.',
+                            args=[ '-eh', '2', '-p', 'Open', '-no-custom'])
+    if bibdoc is None:
+        sys.exit(0)
+    if key == yank_key:
+        if bibdoc.bibtex is None:
+            to_clipboard(bibdoc.filepaths[0])
+        else:
+            del bibdoc.bibtex['_filenames']
+            del bibdoc.bibtex['_filepaths']
+            to_clipboard(bibdoc.bibtex.to_bib(month_to_macro=False,wrap_width=None))
+    elif key == edit_bib_key:
+        open_file(bibdoc.bibdir.bib)
+    elif key == yank_file_path_key:
+        if len(bibdoc.filepaths) > 0:
+            to_clipboard(bibdoc.filepaths[0])
+    elif len(bibdoc.filepaths) > 0:
+        open_file(bibdoc.filepaths[0])
+    else:
+        # selected item was bib entry
+        message = 'Pick a document corresponding to the entry:\n\n'
+        message += '  ' + re.sub('\n', '\n  ', format_bib_entry(bibdoc)) + '\n\n'
+        message += 'The selected file will be renamed to:\n\n'
+        message += '  ' + bibdoc.bibtex['_filenames'][0]
+        message += '\n\n'
+        message += 'The file must be from the same BibDir.'
+        # list all filepaths that are not linked to a bibtex entry:
+        rofi = Rofi()
+        for bd in bibdoc.bibdir.documents:
+            if bd.bibtex is None and len(bd.filepaths) > 0:
+                rofi.add_item(bd, bd.relpath())
+        bd,_ = rofi.call(mesg=message, args=[ '-p', 'Link', '-no-custom'])
+        if bd is None:
+            sys.exit(0)
+        filepath = bd.filepaths[0]
+        dirname, basename = os.path.split(filepath)
+        docname, extension = os.path.splitext(basename)
+        new_path = dirname + '/' + bibdoc.bibtex['_filenames'][0] + extension
+        print("mv \'{}\'  -->  \'{}\'".format(filepath, new_path))
+        move_document(filepath, new_path)
+        open_file(new_path)
+
+if __name__ == "__main__":
+    res = main()
+    if res is not None:
+        sys.exit(res)

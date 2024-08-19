@@ -1,0 +1,5 @@
+set font                        "JetBrainsMono Nerd Font"
+set guioptions                  s
+set selection-clipboard         clipboard
+
+include zathura-nord

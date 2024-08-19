@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+nord0=2e3440
+nord1=3b4252
+nord2=434c5e
+nord3=4c566a
+nord4=d8dee9
+nord5=e5e9f0
+nord6=eceff4
+nord7=8fbcbb
+nord8=88c0d0
+nord9=81a1c1
+nord10=5e81ac
+nord11=bf616a
+nord12=d08770
+nord13=ebcb8b
+nord14=a3be8c
+nord15=b48ea1
+
+solarized03=002b36
+solarized02=073642
+solarized01=586e75
+solarized00=657b83
+solarized0=839496
+solarized1=93a1a1
+solarized2=eee8d5
+solarized3=fdf6e3
+solarized_yellow=b58900
+solarized_orange=cb4b16
+solarized_red=dc322f
+solarized_magenta=d33682
+solarized_violet=6c71c4
+solarized_blue=268bd2
+solarized_cyan=2aa198
+solarized_green=859900
+
+toggle_hyprland () {
+  if [ $1 = "light" ]; then
+    sed -i "s/$nord4/$solarized02/g" ~/.config/hypr/hyprland.conf
+    sed -i "s/$nord1/$solarized2/g" ~/.config/hypr/hyprland.conf
+  else
+    sed -i "s/$solarized02/$nord4/g" ~/.config/hypr/hyprland.conf
+    sed -i "s/$solarized2/$nord1/g" ~/.config/hypr/hyprland.conf
+  fi
+}
+
+toggle_waybar () {
+  if [ $1 = "light" ]; then
+    sed -i "s/\(background: \#\)$nord0/\1$solarized3/g" ~/.config/waybar/style.css
+    sed -i "s/\(background: \#\)$nord2/\1$solarized2/g" ~/.config/waybar/style.css
+
+    sed -i "s/\(border-color: \#\)$nord1/\1$solarized2/g" ~/.config/waybar/style.css
+    sed -i "s/\(border: 1px solid \#\)$nord1/\1$solarized2/g" ~/.config/waybar/style.css
+
+    sed -i "s/\( color: \#\)$nord3/\1$solarized2/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$nord5/\1$solarized1/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$nord6/\1$solarized00/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$nord11/\1$solarized_red/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$nord12/\1$solarized_orange/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$nord14/\1$solarized_green/g" ~/.config/waybar/style.css
+  else
+    sed -i "s/\(background: \#\)$solarized3/\1$nord0/g" ~/.config/waybar/style.css
+    sed -i "s/\(background: \#\)$solarized2/\1$nord2/g" ~/.config/waybar/style.css
+
+    sed -i "s/\(border-color: \#\)$solarized2/\1$nord1/g" ~/.config/waybar/style.css
+    sed -i "s/\(border: 1px solid \#\)$solarized2/\1$nord1/g" ~/.config/waybar/style.css
+
+    sed -i "s/\( color: \#\)$solarized2/\1$nord3/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$solarized1/\1$nord5/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$solarized00;/\1$nord6;/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$solarized_red/\1$nord11/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$solarized_orange/\1$nord12/g" ~/.config/waybar/style.css
+    sed -i "s/\( color: \#\)$solarized_green/\1$nord14/g" ~/.config/waybar/style.css
+  fi
+
+  ~/.local/bin/reload
+}
+
+toggle_mako () {
+  if [ $1 = "light" ]; then
+    sed -i "s/\(background-color=\#\)$nord0/\1$solarized3/g" ~/.config/mako/config
+    sed -i "s/\(text-color=\#\)$nord6/\1$solarized00/g" ~/.config/mako/config
+    sed -i "s/\(border-color=\#\)$nord4/\1$solarized02/g" ~/.config/mako/config
+  else
+    sed -i "s/\(background-color=\#\)$solarized3/\1$nord0/g" ~/.config/mako/config
+    sed -i "s/\(text-color=\#\)$solarized00/\1$nord6/g" ~/.config/mako/config
+    sed -i "s/\(border-color=\#\)$solarized02/\1$nord4/g" ~/.config/mako/config
+  fi
+
+  makoctl reload
+}
+
+toggle_kitty () {
+  if [ $1 = "light" ]; then
+    sed -i "s/nord.conf/solarized.conf/g" ~/.config/kitty/kitty.conf
+  else
+    sed -i "s/solarized.conf/nord.conf/g" ~/.config/kitty/kitty.conf
+  fi
+
+  pkill -USR1 kitty
+}
+
+toggle_fish () {
+  if [ $1 = "light" ];then
+    fish -c solarizedtheme
+  else
+    fish -c nordtheme
+  fi
+}
+
+toggle_vim () {
+  if [ $1 = "light" ]; then
+    sed -i "s/\(colorscheme \)nord/\1solarized/g" ~/.dotfiles/.vimrc
+    sed -i "s/\('colorscheme': \)'nord'/\1'solarized'/g" ~/.dotfiles/.vimrc
+  else
+    sed -i "s/\(colorscheme \)solarized/\1nord/g" ~/.dotfiles/.vimrc
+    sed -i "s/\('colorscheme': \)'solarized'/\1'nord'/g" ~/.dotfiles/.vimrc
+  fi
+}
+
+toggle_rofi () {
+  if [ $1 = "light" ]; then
+    sed -i "s/nord/solarized_light/g" ~/.config/rofi/config.rasi
+  else
+    sed -i "s/solarized_light/nord/g" ~/.config/rofi/config.rasi
+  fi
+}
+
+toggle_code () {
+  if [ $1 = "light" ]; then
+    sed -i "s/Nord/Better Solarized Light/g" ~/.dotfiles/.config/Code\ -\ OSS/User/settings.json
+  else
+    sed -i "s/Better Solarized Light/Nord/g" ~/.dotfiles/.config/Code\ -\ OSS/User/settings.json
+  fi
+}
+
+toggle_zathura () {
+  if [ $1 = "light" ]; then
+    sed -i "s/nord/solarized/g" ~/.config/zathura/zathurarc
+  else
+    sed -i "s/solarized/nord/g" ~/.config/zathura/zathurarc
+  fi
+}
+
+toggle_gtk () {
+  if [ $1 = "light" ]; then
+    gsettings set org.gnome.desktop.interface gtk-theme Adwaita-Light
+  else
+    gsettings set org.gnome.desktop.interface gtk-theme Nordic
+  fi
+}
+
+toggle_swaylock () {
+  if [ $1 = "light" ]; then
+    sed -i "s/$nord0/$solarized3/g" ~/.config/swaylock/config
+    sed -i "s/$nord1/$solarized2/g" ~/.config/swaylock/config
+    sed -i "s/$nord6/$solarized00/g" ~/.config/swaylock/config
+    sed -i "s/$nord7/$solarized_cyan/g" ~/.config/swaylock/config
+    sed -i "s/$nord11/$solarized_red/g" ~/.config/swaylock/config
+    sed -i "s/$nord13/$solarized_yellow/g" ~/.config/swaylock/config
+    sed -i "s/$nord14/$solarized_green/g" ~/.config/swaylock/config
+  else
+    sed -i "s/$solarized3/$nord0/g" ~/.config/swaylock/config
+    sed -i "s/$solarized2/$nord1/g" ~/.config/swaylock/config
+    sed -i "s/$solarized00/$nord6/g" ~/.config/swaylock/config
+    sed -i "s/$solarized_cyan/$nord7/g" ~/.config/swaylock/config
+    sed -i "s/$solarized_red/$nord11/g" ~/.config/swaylock/config
+    sed -i "s/$solarized_yellow/$nord13/g" ~/.config/swaylock/config
+    sed -i "s/$solarized_green/$nord14/g" ~/.config/swaylock/config
+  fi
+}
+
+toggle_wlogout () {
+  if [ $1 = "light" ]; then
+    sed -i "s/46, 52, 64/253, 246, 227/g" ~/.config/wlogout/style.css
+    sed -i "s/$nord0/$solarized3/g" ~/.config/wlogout/style.css
+    sed -i "s/$nord2/$solarized2/g" ~/.config/wlogout/style.css
+    sed -i "s/$nord6/$solarized00/g" ~/.config/wlogout/style.css
+    sed -i "s/$nord8/$solarized_cyan/g" ~/.config/wlogout/style.css
+  else
+    sed -i "s/253, 246, 227/46, 52, 64/g" ~/.config/wlogout/style.css
+    sed -i "s/$solarized3/$nord0/g" ~/.config/wlogout/style.css
+    sed -i "s/$solarized2/$nord2/g" ~/.config/wlogout/style.css
+    sed -i "s/$solarized00/$nord6/g" ~/.config/wlogout/style.css
+    sed -i "s/$solarized_cyan/$nord8/g" ~/.config/wlogout/style.css
+  fi
+}
+
+
+FILE=$HOME/.themes/current_theme
+CURRENT_THEME=$(cat $FILE)
+
+if [ -z $CURRENT_THEME ] || [ $CURRENT_THEME != "dark" ]; then
+  TARGET_THEME="dark"
+else
+  TARGET_THEME="light"
+fi
+
+toggle_hyprland $TARGET_THEME
+toggle_waybar $TARGET_THEME
+toggle_mako $TARGET_THEME
+toggle_kitty $TARGET_THEME
+toggle_fish $TARGET_THEME
+toggle_vim $TARGET_THEME
+toggle_rofi $TARGET_THEME
+toggle_code $TARGET_THEME
+toggle_zathura $TARGET_THEME
+toggle_gtk $TARGET_THEME
+toggle_swaylock $TARGET_THEME
+toggle_wlogout $TARGET_THEME
+
+if [ $TARGET_THEME = "light" ]; then
+  notify-send "Changed current theme" "Set current theme to 'light'."
+  echo light > $FILE
+else
+  notify-send "Changed current theme" "Set current theme to 'dark'."
+  echo dark > $FILE
+fi
+
+# # Rofi
+# sed -i "s/nord/light/g" ~/.config/rofi/config.rasi

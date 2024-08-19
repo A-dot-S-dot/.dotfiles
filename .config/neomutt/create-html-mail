@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+message=/tmp/msg
+signature=/tmp/signature
+
+cat > $message
+
+# Extract signature
+start_signature_line=$(awk '/^--$/{print NR; exit}' $message)
+if [ ! -z $start_signature_line ]; then
+  sed -n "$((start_signature_line+1)),$ p" $message > $signature
+  sed -i "$start_signature_line,$ d" $message
+fi
+
+# Format message
+pandoc --citeproc --bibliography /home/alexey/Nextcloud/Library/bibliography.bib -f gfm -t plain -o /tmp/msg.txt $message
+pandoc --standalone --webtex --citeproc --bibliography /home/alexey/Nextcloud/Library/bibliography.bib -f gfm -t html5 -o /tmp/msg.html $message
+
+# Add signature to txt version of the mail
+if [ ! -z $start_signature_line ]; then
+  echo >> /tmp/msg.txt
+  echo "--" >> /tmp/msg.txt
+  cat $signature >> /tmp/msg.txt
+fi
+
+# Add signature to the hmtl version of the mail
+if [ ! -z $start_signature_line ]; then
+  head -n -2 /tmp/msg.html > /tmp/tmp-msg.html && mv /tmp/tmp-msg.html /tmp/msg.html
+  echo "--<br>" >> /tmp/msg.html
+  if cmp -s $signature $HOME/.config/neomutt/signatures/work.sig; then
+    cat $HOME/.config/neomutt/signatures/work.html >> /tmp/msg.html
+  elif cmp -s $signature $HOME/.config/neomutt/signatures/work+disclaimer.sig; then
+    cat $HOME/.config/neomutt/signatures/work+disclaimer.html >> /tmp/msg.html
+  elif cmp -s $signature $HOME/.config/neomutt/signatures/vorstand.s-kinderhaus.sig; then
+    cat $HOME/.config/neomutt/signatures/vorstand.s-kinderhaus.html >> /tmp/msg.html
+  else
+    echo "WARNING: Signature could not be recognized. No HTML signature available."
+  fi
+  echo "</body>" >> /tmp/msg.html
+  echo "</html>" >> /tmp/msg.html
+fi
+
+# Show result
+firefox /tmp/msg.html
