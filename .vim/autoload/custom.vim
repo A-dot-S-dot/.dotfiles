@@ -88,61 +88,77 @@ function! s:add_link(lines) abort
     \ : a:lines[0]
   let l:mode = split(a:lines[1], '#####')[1]
 
-  call s:add_wiki_link(l:path, l:mode, { 'transform_relative': v:true })
+  if l:mode == 'visual'
+    call s:add_link_visual(l:path)
+  elseif l:mode == 'insert'
+    call s:add_link_insert(l:path)
+  else
+    call s:add_link_normal(l:path)
+  endif
 endfunction
 
-function! s:add_wiki_link(path, mode, ...) abort
+function! s:add_link_visual(path) abort
+  let l:url = s:get_url(a:path)
+  let l:at_last_col = getpos("'>")[2] >= col('$') - 1
+  normal! gv"wd
+  let l:text = trim(getreg('w'))
+
+  call s:add_link_string(l:url, l:text, l:at_last_col)
+endfunction
+
+function! s:get_url(path) abort
   if wiki#paths#is_abs(a:path)
-    let l:cwd = expand('%:p:h')
-    let l:url = stridx(a:path, l:cwd) == 0
-      \ ? wiki#paths#to_wiki_url(a:path, l:cwd)
-      \ : '/' .. wiki#paths#to_wiki_url(a:path)
+    return s:get_existing_url(a:path)
   else
-    let l:creator = wiki#link#get_creator()
-    let l:url = has_key(l:creator, 'url_transform')
-      \ ? l:creator.url_transform(a:path)
-      \ : a:path
+    return s:get_new_url(a:path)
   endif
+endfunction
 
-  if a:mode == 'visual'
-    let l:at_last_col = getpos("'>")[2] >= col('$') - 1
-    normal! gv"wd
-    let l:text = trim(getreg('w'))
-  elseif a:mode == 'insert'
-    let l:text = l:url =~ '^0x'
-      \ ? '(' .. fnamemodify(l:url, ":r") .. ')'
-      \ : substitute(fnamemodify(l:url, ":r"), '_', ' ', 'g')
+function! s:get_existing_url(path) abort
+  let l:cwd = expand('%:p:h')
+  let l:url = stridx(a:path, l:cwd) == 0
+    \ ? wiki#paths#to_wiki_url(a:path, l:cwd)
+    \ : '/' .. wiki#paths#to_wiki_url(a:path)
+  return l:url
+endfunction
+
+function! s:get_new_url(path) abort
+  let l:creator = wiki#link#get_creator()
+  let l:url = has_key(l:creator, 'url_transform')
+    \ ? l:creator.url_transform(a:path)
+    \ : a:path
+  return l:url
+endfunction
+
+function! s:add_link_string(url, text, at_last_col) abort
+  let l:link_string = wiki#link#template(a:url, a:text)
+  let l:position = getcurpos()[1:2]
+  let l:line = getline(l:position[0])
+
+  if a:at_last_col
+    call setline(l:position[0], l:line . l:link_string)
   else
-    let l:text = ''
-  endif
-
-  let l:options = extend({
-    \ 'position': getcurpos()[1:2],
-    \ 'text': l:text,
-    \}, a:0 > 0 ? a:1 : {})
-
-  let l:link_string = wiki#link#template(l:url, l:options.text)
-
-  let l:line = getline(l:options.position[0])
-  if a:mode ==# 'insert' && l:options.position[1] == col('$') - 1
-    call setline(l:options.position[0], l:line . l:link_string)
-  if a:mode ==# 'visual' && l:at_last_col
-    call setline(l:options.position[0], l:line . l:link_string)
-  else
-    call setline(l:options.position[0],
-      \ strpart(l:line, 0, l:options.position[1]-1)
+    call setline(l:position[0],
+      \ strpart(l:line, 0, l:position[1]-1)
       \ .. l:link_string
-      \ .. strpart(l:line, l:options.position[1]-1))
+      \ .. strpart(l:line, l:position[1]-1))
   endif
+endfunction
 
-  if l:options.position == getcurpos()[1:2]
-    call cursor(
-      \ l:options.position[0],
-      \ l:options.position[1] + len(l:link_string)
-      \)
-  endif
+function! s:add_link_insert(path) abort
+  let l:url = s:get_url(a:path)
+  let l:at_last_col = getcurpos()[1] == col('$') - 1
+  let l:text = l:url =~ '^0x'
+    \ ? '(' .. fnamemodify(l:url, ":r") .. ')'
+    \ : substitute(fnamemodify(l:url, ":r"), '_', ' ', 'g')
 
-  if a:mode=='insert'
-    call feedkeys('a')
-  endif
+  call s:add_link_string(l:url, l:text, l:at_last_col)
+  call feedkeys('a')
+endfunction
+
+function! s:add_link_normal(path) abort
+  let l:url = s:get_url(a:path)
+  let l:text = ''
+
+  call s:add_link_string(l:url, l:text, 0)
 endfunction
