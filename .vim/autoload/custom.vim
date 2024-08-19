@@ -64,46 +64,46 @@ function! custom#OpenWikiPageWithFirefox() abort
 endfunction
 
 function! custom#AddWikiLink(...) abort
-  let l:mode = a:0 > 0 ? a:1 : ''
+  let l:mode = a:0 > 0 ? a:1 : 'normal'
   let l:fzf_opts = join([
     \ '-d"#####" --with-nth=-1 --print-query --prompt "WikiLinkAdd> "',
+    \ '--expect=alt-enter',
     \ g:wiki_fzf_opts,
     \])
 
   call fzf#run(fzf#wrap({
     \ 'source': map(
     \   wiki#page#get_all(),
-    \   {_, x ->  x[0] .. '#####' .. l:mode .. '#####' .. s:transform(x[1]) }),
-    \ 'sink*': funcref('s:add_link'),
+    \   {_, x ->  x[0] .. '#####' .. s:transform(x[1]) }),
+    \ 'sink*': funcref('s:add_link_'..l:mode),
     \ 'options': l:fzf_opts
     \}))
 endfunction
 
-function! s:add_link(lines) abort
-  " a:lines is a list with one or two elements. Two if there was a match, else
-  " one. The first element is the search query; the second element contains the
-  " selected item.
-  let l:path = len(a:lines) == 2
-    \ ? split(a:lines[1], '#####')[0]
-    \ : a:lines[0]
-  let l:mode = split(a:lines[1], '#####')[1]
-
-  if l:mode == 'visual'
-    call s:add_link_visual(l:path)
-  elseif l:mode == 'insert'
-    call s:add_link_insert(l:path)
-  else
-    call s:add_link_normal(l:path)
-  endif
-endfunction
-
-function! s:add_link_visual(path) abort
-  let l:url = s:get_url(a:path)
+function! s:add_link_visual(lines) abort
+  let l:path = s:get_path(a:lines)
+  let l:url = s:get_url(l:path)
   let l:at_last_col = getpos("'>")[2] >= col('$') - 1
   normal! gv"wd
   let l:text = trim(getreg('w'))
 
   call s:add_link_string(l:url, l:text, l:at_last_col)
+endfunction
+
+function! s:get_path(lines) abort
+  " a:lines is a list with two or three elements. Two if there were no
+  " matches, and three if there is one or more matching names. The first
+  " element is the search query; the second is either an empty string or the
+  " alternative key 'alt-enter' if this was pressed; the third element
+  " contains the selected item.
+
+  if empty(a:lines[0]) && !empty(a:lines[1])
+    return custom#GetRandomPageName()
+  elseif len(a:lines) == 2 || !empty(a:lines[1])
+    return a:lines[0]
+  else
+    return split(a:lines[2], '#####')[0]
+  endif
 endfunction
 
 function! s:get_url(path) abort
@@ -123,11 +123,7 @@ function! s:get_existing_url(path) abort
 endfunction
 
 function! s:get_new_url(path) abort
-  let l:creator = wiki#link#get_creator()
-  let l:url = has_key(l:creator, 'url_transform')
-    \ ? l:creator.url_transform(a:path)
-    \ : a:path
-  return l:url
+  return substitute(a:path, '_', ' ', 'g')..".md"
 endfunction
 
 function! s:add_link_string(url, text, at_last_col) abort
@@ -145,8 +141,9 @@ function! s:add_link_string(url, text, at_last_col) abort
   endif
 endfunction
 
-function! s:add_link_insert(path) abort
-  let l:url = s:get_url(a:path)
+function! s:add_link_insert(lines) abort
+  let l:path = s:get_path(a:lines)
+  let l:url = s:get_url(l:path)
   let l:at_last_col = getcurpos()[1] == col('$') - 1
   let l:text = l:url =~ '^0x'
     \ ? '(' .. fnamemodify(l:url, ":r") .. ')'
@@ -156,9 +153,12 @@ function! s:add_link_insert(path) abort
   call feedkeys('a')
 endfunction
 
-function! s:add_link_normal(path) abort
-  let l:url = s:get_url(a:path)
-  let l:text = ''
+function! s:add_link_normal(lines) abort
+  let l:path = s:get_path(a:lines)
+  let l:url = s:get_url(l:path)
+  let l:text = l:url =~ '^0x'
+    \ ? '(' .. fnamemodify(l:url, ":r") .. ')'
+    \ : substitute(fnamemodify(l:url, ":r"), '_', ' ', 'g')
 
   call s:add_link_string(l:url, l:text, 0)
 endfunction
