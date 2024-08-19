@@ -37,7 +37,7 @@ function! s:open_page(lines) abort
   if empty(a:lines[0]) && !empty(a:lines[1])
     call wiki#url#follow(custom#GetRandomPageName())
   elseif len(a:lines) == 2 || !empty(a:lines[1])
-    call wiki#url#follow(a:lines[0])
+    call wiki#url#follow(substitute(a:lines[0], ' ', '_', 'g'))
   else
     execute 'edit ' .. split(a:lines[2], '#####')[0]
   endif
