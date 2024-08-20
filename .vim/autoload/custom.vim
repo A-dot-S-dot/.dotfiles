@@ -25,7 +25,7 @@ endfunction
 
 function! s:transform(entry) abort
   let l:entry = substitute(a:entry, '_', ' ', 'g')
-  let l:entry = substitute(l:entry, '^/', '', 'g')
+  let l:entry = substitute(l:entry, '^/', '', '')
   return cases#capitalize(l:entry)
 endfunction
 
@@ -125,7 +125,7 @@ function! s:get_existing_url(path) abort
 endfunction
 
 function! s:get_new_url(path) abort
-  return substitute(a:path, '_', ' ', 'g')..".md"
+  return substitute(a:path, ' ', '_', 'g')..".md"
 endfunction
 
 function! s:add_link_string(url, text, at_last_col) abort
