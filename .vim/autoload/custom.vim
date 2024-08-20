@@ -141,6 +141,13 @@ function! s:add_link_string(url, text, at_last_col) abort
       \ .. l:link_string
       \ .. strpart(l:line, l:position[1]-1))
   endif
+
+  if l:position == getcurpos()[1:2]
+    call cursor(
+          \ l:position[0],
+          \ l:position[1] + len(l:link_string)
+          \)
+  endif
 endfunction
 
 function! s:add_link_insert(lines) abort
