@@ -469,7 +469,7 @@ endsnippet
 
 context "math()"
 snippet int "integral" w
-\int_{${1:-\infty}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:${VISUAL}}`!p snip.rv = "" if t[4]=="" else "\\d "`${4:x} $0
+\int_{${1:-\infty}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:${VISUAL}}
 endsnippet
 
 context "math()"
@@ -745,11 +745,6 @@ priority 100
 context "math()"
 snippet ^cc "complement" iA
 ^{\mathrm{c}}
-endsnippet
-
-context "math()"
-snippet "(\\mid|\|)([._])" "restriction" irA
-{\mid}`!p snip.rv=match.group(2)`
 endsnippet
 
 # Styles
