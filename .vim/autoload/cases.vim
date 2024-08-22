@@ -3,7 +3,7 @@ let g:exclusions = [
   \'but', 'by',
   \'en',
   \'for',
-  \'if', 'in',
+  \'if', 'in', 'is',
   \'nor',
   \'oder', 'of', 'on', 'or',
   \'per',
