@@ -5,4 +5,3 @@ call vimtex#init()
 nmap <leader>wo :call custom#OpenWikiPageWithBrowserSync()<cr>
 nmap <leader>wO :call custom#OpenWikiPageWithFirefox()<cr>
 nmap dsl :WikiLinkRemove<cr>
-xmap <leader>wa :call custom#AddWikiLink('visual')<cr>
