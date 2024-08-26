@@ -82,6 +82,7 @@ install () {
     netctl \
     network-manager-applet \
     networkmanager \
+    newsboat \
     nextcloud-client \
     nm-connection-editor \
     nodejs-lts-iron \
@@ -192,6 +193,7 @@ symlink () {
   mkdir -pv ~/.config/waybar/scripts
   mkdir -pv ~/.config/neomutt
   mkdir -pv ~/.npm-global
+  mkdir -pv ~/.newsboat
 
   if ! [ -L ~/.bashrc ] || ! [ -e ~/.bashrc ]; then
     rm -fv ~/.bashrc
