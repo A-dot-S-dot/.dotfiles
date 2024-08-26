@@ -15,10 +15,11 @@ confedit_list[rofi]="$HOME/.config/rofi/config.rasi"
 confedit_list[setup]="$HOME/.dotfiles/setup"
 confedit_list[swaylock]="$HOME/.config/swaylock/config"
 confedit_list[tessen]="$HOME/.config/tessen/config"
+confedit_list[ultisnips-tex]="/home/alexey/.vim/UltiSnips/tex.snippets"
+confedit_list[vim]="$HOME/.vimrc"
 confedit_list[waybar]="$HOME/.config/waybar/config.jsonc"
 confedit_list[waybar-style]="$HOME/.config/waybar/style.css"
 confedit_list[wlogout]="$HOME/.config/wlogout/style.css"
-confedit_list[vim]="$HOME/.vimrc"
 confedit_list[zathura]="$HOME/.config/zathura/zathurarc"
 
 # Search engine config
