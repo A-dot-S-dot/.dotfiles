@@ -1,0 +1,27 @@
+auto-reload yes
+
+# Appearance
+include /usr/share/doc/newsboat/contrib/colorschemes/nord
+show-title-bar no
+show-keymap-hint no
+
+# BINDINGS
+# unbind keys
+unbind-key ENTER
+unbind-key j
+unbind-key k
+unbind-key J
+unbind-key K
+unbind-key o
+
+# bind keys - vim style
+bind-key j down
+bind-key k up
+bind-key l open
+bind-key h quit
+bind-key J next-feed
+bind-key K prev-feed
+bind-key o open-in-browser-and-mark-read
+
+# In feedlist h should not quit newsboat
+unbind-key h feedlist

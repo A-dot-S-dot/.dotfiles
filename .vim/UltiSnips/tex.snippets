@@ -267,7 +267,7 @@ endsnippet
 # Letters
 priority 100
 context "math()"
-snippet '(?<!\\)(beta|iota|mu|nu|pi|Pi|phi|Phi|psi|Psi|rho|tau|xi|zeta)' "Greek letters" rwA
+snippet '(?<!\\)(beta|eta|iota|mu|nu|pi|Pi|phi|Phi|psi|Psi|rho|tau|xi|zeta)' "Greek letters" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -480,6 +480,22 @@ endsnippet
 context "math()"
 snippet "\cap n" "bigcap" iA
 \bigcap_{${1:i=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:n}`!p snip.rv = "" if t[2]=="" else "}"` $0
+endsnippet
+
+context "math()"
+snippet "(\\big|\\Big|\\bigg|\\Bigg|.*)\|([jk])" "auto vertical line" riA
+`!p
+if match.group(1) == "\\big":
+	snip.rv="" if match.group(2)=="j" else "\\Big"
+elif match.group(1) == "\\Big":
+	snip.rv="\\big" if match.group(2)=="j" else "\\bigg"
+elif match.group(1) == "\\bigg":
+	snip.rv="\\Big" if match.group(2)=="j" else "\\Bigg"
+elif match.group(1) == "\\Bigg":
+	snip.rv="\\bigg" if match.group(2)=="j" else ""
+else:
+	snip.rv="\\Bigg" if match.group(2)=="j" else "\\big"
+`|
 endsnippet
 
 # Standard Function Names
@@ -703,25 +719,25 @@ endsnippet
 # Super- and Subscript
 priority 50
 context "math()"
-snippet "\.([a-zA-Z0-9\-*])" "auto subscript" irA
+snippet "\.([a-zA-Z0-9\-+*])" "auto subscript" irA
 _`!p snip.rv = match.group(1)`
 endsnippet
 
 priority 100
 context "math()"
-snippet "\.\.([a-zA-Z0-9\-*])" "auto subscript 2" irA
+snippet "\.\.([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
 _{`!p snip.rv = match.group(1)`$1}$0
 endsnippet
 
 priority 50
 context "math()"
-snippet "'([a-zA-Z0-9\-*])" "auto superscript" irA
+snippet "'([a-zA-Z0-9\-+*])" "auto superscript" irA
 ^`!p snip.rv = match.group(1)`
 endsnippet
 
 priority 100
 context "math()"
-snippet "''([a-zA-Z0-9\-*])" "auto subscript 2" irA
+snippet "''([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
 ^{`!p snip.rv = match.group(1)`$1}$0
 endsnippet
 
