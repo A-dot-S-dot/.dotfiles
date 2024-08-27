@@ -31,8 +31,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-pandoc/vim-pandoc'
   Plug 'vim-pandoc/vim-pandoc-syntax'
 "{{ Miscellaneous }}
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() }, 'commit': '5cce17e'}
-  Plug 'junegunn/fzf.vim'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() }}
   Plug '~/.vim/plugged/wiki.vim'
   Plug 'dyng/ctrlsf.vim'
 call plug#end()
