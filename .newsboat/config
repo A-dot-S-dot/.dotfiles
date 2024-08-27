@@ -13,6 +13,7 @@ unbind-key k
 unbind-key J
 unbind-key K
 unbind-key o
+unbind-key D
 
 # bind keys - vim style
 bind-key j down
@@ -22,6 +23,8 @@ bind-key h quit
 bind-key J next-feed
 bind-key K prev-feed
 bind-key o open-in-browser-and-mark-read
+bind-key d delete-article
+bind-key D delete-all-articles
 
 # In feedlist h should not quit newsboat
 unbind-key h feedlist
