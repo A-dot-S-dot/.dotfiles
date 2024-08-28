@@ -14,7 +14,6 @@
   "modules-center": ["hyprland/window"],
   "modules-right": [
     "tray",
-    "custom/mail",
     "battery",
     "cpu",
     "disk",
@@ -51,12 +50,6 @@
   "tray": {
     "icon-size": 13,
     "spacing": 10
-  },
-  "custom/mail": {
-    "format": " {}",
-    "interval": 10,
-    "exec": "~/.local/bin/get-mail -w",
-    "on-click": "kitty neomutt"
   },
   "battery": {
     "states": {

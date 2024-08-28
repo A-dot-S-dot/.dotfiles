@@ -46,7 +46,6 @@ tooltip label {
 #workspaces,
 #window,
 #tray,
-#custom-mail,
 #battery,
 #cpu,
 #disk,
@@ -87,15 +86,8 @@ tooltip label {
 }
 
 #tray {
-  border-radius: 10px 0px 0px 10px;
-  border-right: 0px;
-  padding-right: 0px;
-}
-
-#custom-mail {
-  border-radius: 0px 10px 10px 0px;
-  border-left: 0px;
-  margin-right: 5px;
+  border-radius: 10px;
+  margin-right: 5px
 }
 
 #battery {
