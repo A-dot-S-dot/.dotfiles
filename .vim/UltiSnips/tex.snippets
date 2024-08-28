@@ -435,10 +435,14 @@ snippet abs "absolute value" iA
 \lvert $1\rvert$0
 endsnippet
 
-priority 200
 context "math()"
 snippet norm "norm" iA
 \lVert ${1:\cdot}\rVert$0
+endsnippet
+
+context "math()"
+snippet sprod "scalr product" iA
+\langle ${1:\cdot}, ${2:\cdot}\rangle$0
 endsnippet
 
 context "math()"

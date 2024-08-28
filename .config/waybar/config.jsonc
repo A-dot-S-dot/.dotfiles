@@ -14,7 +14,6 @@
   "modules-center": ["hyprland/window"],
   "modules-right": [
     "tray",
-    "custom/mail",
     "cpu",
     "disk",
     "pulseaudio",
@@ -49,12 +48,6 @@
   "tray": {
     "icon-size": 13,
     "spacing": 10
-  },
-  "custom/mail": {
-    "format": " {}",
-    "interval": 10,
-    "exec": "~/.local/bin/get-mail -w",
-    "on-click": "kitty neomutt"
   },
   "cpu": {
     "interval": 10,
