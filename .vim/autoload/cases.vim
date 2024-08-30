@@ -1,7 +1,8 @@
 let g:exclusions = [
   \'a', 'an', 'and', 'as', 'at',
   \'but', 'by',
-  \'en',
+  \'die', 'der', 'das', 'des', 'dem', 'den', 'dessen',
+  \'en', 'ein', 'eine', 'einer',
   \'for',
   \'if', 'in', 'is',
   \'nor',
