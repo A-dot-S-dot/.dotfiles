@@ -458,7 +458,7 @@ endsnippet
 # Variable-sized symbols
 context "math()"
 snippet sum "sum" w
-\sum_{${1:n=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:a_n}
+\sum_{${1:n=1}}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "}"` ${3:a_n}
 endsnippet
 
 context "math()"
