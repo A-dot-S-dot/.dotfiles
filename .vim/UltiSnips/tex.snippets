@@ -115,7 +115,7 @@ snippet sec "section" bA
 $0
 endsnippet
 
-priority 100
+priority 50
 snippet ssec "subsection" bA
 \subsection{$1}
 \label{sec:$2}
@@ -287,13 +287,8 @@ snippet Del "Delta" iA
 endsnippet
 
 context "math()"
-snippet veps "var epsilon" iA
-\varepsilon
-endsnippet
-
-context "math()"
 snippet eps "epsilon" iA
-\epsilon
+\varepsilon
 endsnippet
 
 context "math()"
@@ -463,7 +458,7 @@ endsnippet
 # Variable-sized symbols
 context "math()"
 snippet sum "sum" w
-\sum_{${1:n=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:a_n}
+\sum_{${1:n=1}}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "}"` ${3:a_n}
 endsnippet
 
 context "math()"
@@ -729,7 +724,7 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "\.\.([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
+snippet "\.\.([^.])" "auto subscript 2" irA
 _{`!p snip.rv = match.group(1)`$1}$0
 endsnippet
 
@@ -741,8 +736,8 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "''([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
-^{`!p snip.rv = match.group(1)`$1}$0
+snippet '' "auto subscript 2" iA
+^{$1}$0
 endsnippet
 
 priority 10
@@ -770,62 +765,14 @@ endsnippet
 # Styles
 priority 10
 context "math()"
-snippet bb "blackboard bold" iA
-\mathbb{$1}$0
+snippet "(bb|cal|frak|rm|bm|ring)" "accents" riA
+\math`!p snip.rv=match.group(1)`{$1}$0
 endsnippet
 
 priority 100
 context "math()"
-snippet "([a-zA-Z])bb" "blackboard bold" riA
-\mathbb{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet cl "mathcal" iA
-\mathcal{$1}$0
-endsnippet
-
-priority 100
-context "math()"
-snippet "([a-zA-Z])cl" "mathcal" riA
-\mathcal{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet frak "mathfrak" iA
-\mathfrak{$1}$0
-endsnippet
-
-priority 100
-context "math()"
-snippet "([a-zA-Z])frak" "mathfrak" riA
-\mathfrak{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet "bold" "bold" iA
-\bm{$1}$0
-endsnippet
-
-priority 100
-context "math()"
-snippet "([a-zA-Z])bold" "bold" riA
-\bm{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet rm "mathrm" iA
-\mathrm{$1}$0
-endsnippet
-
-priority 100
-context "math()"
-snippet "([a-zA-Z])rm" "mathrm" riA
-\mathrm{`!p snip.rv=match.group(1)`}
+snippet "([a-zA-Z])(bb|cal|frak|rm|bm|ring)" "accents 2" riA
+\math`!p snip.rv=match.group(2)`{`!p snip.rv=match.group(1)`}
 endsnippet
 
 context "math()"

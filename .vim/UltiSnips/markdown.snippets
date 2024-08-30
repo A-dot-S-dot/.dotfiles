@@ -63,26 +63,28 @@ snippet sec "Section" bA
 $0
 endsnippet
 
-snippet ssec "Sub Section" b
-## ${1:Section Name}
+priority 100
+snippet ssec "Sub Section" bA
+## ${1:${VISUAL:Section Name}}
 
 $0
 endsnippet
 
-snippet sssec "SubSub Section" b
-### ${1:Section Name}
+priority 100
+snippet sssec "SubSub Section" bA
+### ${1:${VISUAL:Section Name}}
 
 $0
 endsnippet
 
-snippet par "Paragraph" b
-#### ${1:Paragraph Name}
+snippet par "Paragraph" bA
+#### ${1:${VISUAL:Paragraph Name}}
 
 $0
 endsnippet
 
-snippet spar "Paragraph" b
-##### ${1:Paragraph Name}
+snippet spar "Paragraph" bA
+##### ${1:${VISUAL:Paragraph Name}}
 
 $0
 endsnippet
