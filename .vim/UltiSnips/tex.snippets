@@ -724,7 +724,7 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "\.\.([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
+snippet "\.\.([^.])" "auto subscript 2" irA
 _{`!p snip.rv = match.group(1)`$1}$0
 endsnippet
 
@@ -736,8 +736,8 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "''([a-zA-Z0-9\-+*(])" "auto subscript 2" irA
-^{`!p snip.rv = match.group(1)`$1}$0
+snippet '' "auto subscript 2" iA
+^{$1}$0
 endsnippet
 
 priority 10
