@@ -4,6 +4,9 @@ auto-reload yes
 include /usr/share/doc/newsboat/contrib/colorschemes/nord
 show-title-bar no
 show-keymap-hint no
+feedlist-format "%5u %t"
+highlight feedlist ".0/0..-" black default dim
+highlight feedlist "---.*---" color6 color0 bold
 
 # BINDINGS
 # unbind keys
