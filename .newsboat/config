@@ -10,7 +10,6 @@ highlight feedlist "---.*---" color6 color0 bold
 
 # BINDINGS
 # unbind keys
-unbind-key ENTER
 unbind-key j
 unbind-key k
 unbind-key J
