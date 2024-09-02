@@ -7,6 +7,18 @@ function! custom#CreateTitle(ctx, text) abort
   return cases#capitalize(l:title)
 endfunction
 
+function! custom#EditMetadata(key) abort
+  let key_line = search("^"..a:key..":")
+  if l:key_line
+    call setline(l:key_line, a:key..": ")
+  else
+    call append(1, a:key..": ")
+    let l:key_line = 2
+  endif
+  call cursor(l:key_line, 7)
+  call feedkeys('a')
+endfunction
+
 function! custom#OpenWikiPage() abort
   let l:fzf_opts = join([
     \ '-d"#####" --with-nth=-1 --print-query --prompt "WikiPages> "',
