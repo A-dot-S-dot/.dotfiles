@@ -16,15 +16,16 @@ let g:exclusions = [
 
 function! cases#capitalize(string)
   let l:words = split(a:string, " ")
-  let l:cap_string = cases#capitalize_word(l:words[0])
 
-  if len(l:words)>1
-    for word in l:words[1:]
-      let l:cap_string ..= " "..cases#capitalize_word(word)
+  for i in range(len(l:words))
+    let l:word = split(l:words[i], "-")
+    for j in range(len(l:word))
+      let l:word[j] = cases#capitalize_word(l:word[j])
     endfor
-  endif
+    let l:words[i]=join(l:word, "-")
+  endfor
 
-  return l:cap_string
+  return join(l:words)
 endfunction
 
 function! cases#capitalize_word(word) abort
