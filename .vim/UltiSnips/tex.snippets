@@ -385,38 +385,34 @@ endsnippet
 
 priority 10
 context "math()"
-snippet "bar" "bar" riA
-\bar{$1}$0
+snippet "(bar|hat|til|ring)" "accents" riA
+\\`!p
+if match.group(1)=="til":
+	snip.rv="tilde"
+elif match.group(1)=="ring":
+	snip.rv="mathring"
+else:
+	snip.rv=match.group(1)
+`{${1:${VISUAL}}}$0
 endsnippet
 
 priority 100
 context "math()"
-snippet "([a-zA-Z])bar" "bar" riA
-\bar{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet "hat" "hat" riA
-\hat{$1}$0
-endsnippet
-
-priority 100
-context "math()"
-snippet "([a-zA-Z])hat" "hat" riA
-\hat{`!p snip.rv=match.group(1)`}
-endsnippet
-
-priority 10
-context "math()"
-snippet "til" "tilde" riA
-\widetilde{$1}$0
+snippet "([a-zA-Z])(bar|hat|til|ring)" "accents 2" riA
+\\`!p
+if match.group(2)=="til":
+	snip.rv="tilde"
+elif match.group(2)=="ring":
+	snip.rv="mathring"
+else:
+	snip.rv=match.group(2)
+`{`!p snip.rv=match.group(1)`}
 endsnippet
 
 priority 100
 context "math()"
-snippet "([a-zA-Z])til" "tilde" riA
-\widetilde{`!p snip.rv=match.group(1)`}
+snippet "\\(tilde|hat){([a-zA-Z\\]+)}ww" "wide accents" riA
+\\wide`!p snip.rv=match.group(1)+"{"+match.group(2)+"}"` $0
 endsnippet
 
 # Delimiters
@@ -662,6 +658,7 @@ snippet vv "vee" iA
 \vee $0
 endsnippet
 
+priority 10
 context "math()"
 snippet ww "wedge" iA
 \wedge $0
@@ -765,13 +762,13 @@ endsnippet
 # Styles
 priority 10
 context "math()"
-snippet "(bb|cal|frak|rm|bm|ring)" "accents" riA
-\math`!p snip.rv=match.group(1)`{$1}$0
+snippet "(bb|cal|frak|rm|bm)" "math styles" riA
+\math`!p snip.rv=match.group(1)`{${1:${VISUAL}}}$0
 endsnippet
 
 priority 100
 context "math()"
-snippet "([a-zA-Z])(bb|cal|frak|rm|bm|ring)" "accents 2" riA
+snippet "([a-zA-Z])(bb|cal|frak|rm|bm)" "math styles 2" riA
 \math`!p snip.rv=match.group(2)`{`!p snip.rv=match.group(1)`}
 endsnippet
 
