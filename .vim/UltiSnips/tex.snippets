@@ -453,28 +453,29 @@ endsnippet
 
 # Variable-sized symbols
 context "math()"
-snippet sum "sum" w
-\sum_{${1:n=1}}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" or t[2]=="'" else "}"` ${3:a_n}
-endsnippet
-
-context "math()"
-snippet prod "product" w
-\prod_{${1:n=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:${VISUAL}} $0
+snippet "(sum|prod|\\cup u|\\cap n)" "variable sized symbols" irA
+\\`!p
+snip.rv=match.group(1)
+if match.group(1)=="\\cup u":
+	snip.rv="bigcup"
+elif match.group(1)=="\\cap n":
+	snip.rv="bigcap"
+else:
+	snip.rv=match.group(1)
+`_{${1:i=1}}`!p
+snip.rv = "" if t[2]=="" or t[2]=="'" else "^{"
+`${2:n}`!p
+snip.rv = "" if t[2]=="" or t[2]=="'" else "}"
+` $0
 endsnippet
 
 context "math()"
 snippet int "integral" w
-\int_{${1:-\infty}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:\infty}`!p snip.rv = "" if t[2]=="" else "}"` ${3:${VISUAL}}
-endsnippet
-
-context "math()"
-snippet "\cup u" "bigcup" iA
-\bigcup_{${1:i=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:n}`!p snip.rv = "" if t[2]=="" else "}"` $0
-endsnippet
-
-context "math()"
-snippet "\cap n" "bigcap" iA
-\bigcap_{${1:i=1}}`!p snip.rv = "" if t[2]=="" else "^{"`${2:n}`!p snip.rv = "" if t[2]=="" else "}"` $0
+\int_{${1:-\infty}}`!p
+snip.rv = "" if t[2]=="" else "^{"
+`${2:\infty}`!p
+snip.rv = "" if t[2]=="" else "}"
+` ${3:${VISUAL}}
 endsnippet
 
 context "math()"
