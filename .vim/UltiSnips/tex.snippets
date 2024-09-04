@@ -431,6 +431,7 @@ snippet norm "norm" iA
 \lVert ${1:\cdot}\rVert$0
 endsnippet
 
+priority 100
 context "math()"
 snippet sprod "scalr product" iA
 \langle ${1:\cdot}, ${2:\cdot}\rangle$0
@@ -452,6 +453,7 @@ snippet bin "binomial" iA
 endsnippet
 
 # Variable-sized symbols
+priority 10
 context "math()"
 snippet "(sum|prod|\\cup u|\\cap n)" "variable sized symbols" irA
 \\`!p
