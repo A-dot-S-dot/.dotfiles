@@ -500,13 +500,7 @@ endsnippet
 # Standard Function Names
 priority 100
 context "math()"
-snippet '(?<!\\)(sup|inf|max|min|sin|cos|cot|csc|ln|log|exp|star|perp)' "math operators" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-priority 200
-context "math()"
-snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec)' "arcus stuff" rwA
+snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|cos|cot|csc|det|exp|inf|ln|log|max|min|perp|sin|star|sup)' "math operators" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
