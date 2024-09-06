@@ -22,7 +22,7 @@ for file in $DIR/*; do
   fi
 done
 
-WIKI_PAGE="$(ls $DIR | sed -e 's/\.html$//' | sed -e 's/_/ /g' | rofi -dmenu -p "Choose Wiki Page:" -theme-str 'window {width: 50%;}' -l 10 -i)"
+WIKI_PAGE="$(ls $DIR | sed -e 's/\.html$//' | sed -e 's/_/ /g' | sed -E 's/\w+/\u&/g' | rofi -dmenu -p "Choose Wiki Page:" -theme-str 'window {width: 50%;}' -l 10 -i)"
 
 if [ -z $WIKI_PAGE ]; then
   exit 1
