@@ -8,7 +8,6 @@ configuration {
   display-drun:   "";
   display-window: "";
   display-combi:  "";
-  display-calc:   "";
   show-icons:     true;
   icon-theme: "Papirus";
 
