@@ -3,7 +3,6 @@
 DIR=build
 cd ~/Nextcloud/Notes/Wiki/
 
-make
 MDS=(*.md)
 
 # Remove html files which have not corresponding markdown file
