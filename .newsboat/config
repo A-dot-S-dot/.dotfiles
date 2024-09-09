@@ -1,4 +1,6 @@
+# Relaoding setup
 auto-reload yes
+reload-threads 3
 
 # Appearance
 include /usr/share/doc/newsboat/contrib/colorschemes/nord
