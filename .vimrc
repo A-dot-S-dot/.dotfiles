@@ -221,23 +221,6 @@ let g:wiki_link_creation = {
   \ },
   \}
 
-let s:pandoc_args = '--standalone '
-  \.. '--toc '
-  \.. '--template easy_template.html '
-  \.. '--mathjax '
-  \.. '--citeproc '
-  \.. '--metadata-file metadata.yaml '
-  \.. '--extract-media ..'
-
-let g:wiki_export = {
-  \ 'args' : s:pandoc_args,
-  \ 'from_format' : 'markdown',
-  \ 'ext' : 'html',
-  \ 'link_ext_replace': v:true,
-  \ 'view' : v:false,
-  \ 'output': 'build/',
-  \}
-
 let g:wiki_select_method = {
   \ 'pages': function('custom#OpenWikiPage'),
   \ 'tags': function('wiki#fzf#tags'),
