@@ -385,7 +385,7 @@ endsnippet
 
 priority 10
 context "math()"
-snippet "(bar|hat|til|ring)" "accents" riA
+snippet "(bar|ddot|dot|hat|ring|til)" "accents" riA
 \\`!p
 if match.group(1)=="til":
 	snip.rv="tilde"
@@ -398,10 +398,10 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "([a-zA-Z])(bar|hat|til|ring)" "accents 2" riA
+snippet "([a-zA-Z])(bar|ddot|dot|hat|ring|til)" "accents 2" riA
 \\`!p
 if match.group(2)=="til":
-	snip.rv="tilde"
+	snip.rv="widetilde"
 elif match.group(2)=="ring":
 	snip.rv="mathring"
 else:
@@ -411,8 +411,8 @@ endsnippet
 
 priority 100
 context "math()"
-snippet "\\(tilde|hat){([a-zA-Z\\]+)}ww" "wide accents" riA
-\\wide`!p snip.rv=match.group(1)+"{"+match.group(2)+"}"` $0
+snippet "\\(hat){([a-zA-Z\\]+)}ww" "wide accents" riA
+\\wide`!p snip.rv=match.group(1)+"{"+match.group(2)+"}"`
 endsnippet
 
 # Delimiters
