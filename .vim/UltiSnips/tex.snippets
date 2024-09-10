@@ -719,7 +719,7 @@ endsnippet
 # Super- and Subscript
 priority 50
 context "math()"
-snippet "\.([a-zA-Z0-9\-+*])" "auto subscript" irA
+snippet "\.([a-zA-Z0-9\-+*\\])" "auto subscript" irA
 _`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -731,7 +731,7 @@ endsnippet
 
 priority 50
 context "math()"
-snippet "'([a-zA-Z0-9\-+*])" "auto superscript" irA
+snippet "'([a-zA-Z0-9\-+*\\])" "auto superscript" irA
 ^`!p snip.rv = match.group(1)`
 endsnippet
 
