@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-DIR=build/
+DIR=build
 cd ~/Nextcloud/Notes/Wiki/
 
-make
 MDS=(*.md)
 
+# Remove html files which have not corresponding markdown file
 for file in $DIR/*; do
   target=${file##*/}   # Remove path
   target="${target%.html}"  # Remove Extension
@@ -22,11 +22,13 @@ for file in $DIR/*; do
   fi
 done
 
-WIKI_PAGE="$(ls $DIR | sed -e 's/\.html$//' | sed -e 's/_/ /g' | rofi -dmenu -p "Choose Wiki Page:" -theme-str 'window {width: 50%;}' -l 10 -i)"
+# Choosen wiki page
+WIKI_PAGE_INDEX="$(ls $DIR | sed -e 's/\.html$//' | sed -e 's/_/ /g' | sed -E 's/\w+/\u&/g' | rofi -dmenu -format i  -p "Choose Wiki Page:" -theme-str 'window {width: 50%;}' -l 10 -i)"
 
-if [ -z $WIKI_PAGE ]; then
+# Open wiki page
+if [ -z $WIKI_PAGE_INDEX ]; then
   exit 1
 else
-  WIKI_PAGE=${WIKI_PAGE// /_}
-  firefox $DIR$WIKI_PAGE.html
+  WIKI_PAGES=($(ls $DIR))
+  firefox $DIR/${WIKI_PAGES[$WIKI_PAGE_INDEX]}
 fi
