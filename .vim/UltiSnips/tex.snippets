@@ -500,7 +500,7 @@ endsnippet
 # Standard Function Names
 priority 100
 context "math()"
-snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|cos|cot|csc|det|exp|inf|ln|log|max|min|perp|sin|star|sup)' "math operators" rwA
+snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|cos|cot|csc|det|exp|flat|inf|ln|log|max|min|perp|sin|sharp|star|sup)' "math operators" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -812,6 +812,11 @@ endsnippet
 context "math()"
 snippet ii "i" iA
 \i
+endsnippet
+
+context "math()"
+snippet bb "flat" iA
+\flat
 endsnippet
 
 context "math()"
