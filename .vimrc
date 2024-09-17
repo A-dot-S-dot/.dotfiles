@@ -218,8 +218,7 @@ let g:wiki_link_creation = {
   \ 'md': {
   \   'link_type': 'md',
   \   'url_extension': '.md',
-  \   'url_transform': { x ->
-  \     custom#GetRandomPageName()},
+  \   'url_transform': { x -> custom#GetRandomPageName()},
   \ },
   \}
 
