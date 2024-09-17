@@ -234,4 +234,15 @@ let g:wiki_fzf_opts = '--preview "bat --language=LaTeX --style=numbers --color=a
 let g:wiki_fzf_pages_opts = g:wiki_fzf_opts
 let g:wiki_fzf_links_opts = g:wiki_fzf_opts
 
+let g:wiki_journal = {
+  \ 'name': 'journal',
+  \ 'root': '',
+  \ 'frequency': 'daily',
+  \ 'date_format': {
+  \   'daily' : '%Y/%m/%d',
+  \   'weekly' : '%Y/%m/week_%V',
+  \   'monthly' : '%Y/%m/summary',
+  \ },
+  \}
+
 nmap <leader>ww :call custom#OpenWikiPage() <CR>
