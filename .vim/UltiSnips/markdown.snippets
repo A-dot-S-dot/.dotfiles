@@ -120,6 +120,17 @@ snippet img "Image"
 ![$1](${2:path})$0
 endsnippet
 
+priority 300
+snippet nocite "reference without citation" bA
+nocite: |
+	@$0
+endsnippet
+
+snippet header "header-includes" bA
+header-includes:
+  - \newcommand{\\${1:e}}{${2:\mathrm{$1}}}
+endsnippet
+
 priority 200
 snippet cite "citation" iA
 [@$1]$0

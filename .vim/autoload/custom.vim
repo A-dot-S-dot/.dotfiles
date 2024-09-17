@@ -2,6 +2,13 @@ function! custom#GetRandomPageName() abort
   return printf("0x%08x", str2nr(strftime('%s')))
 endfunction
 
+function! custom#IsJournalFile() abort
+  if expand("%:p") =~ g:wiki_journal.name
+    return v:true
+  endif
+  return v:false
+endfunction
+
 function! custom#CreateTitle(ctx, text) abort
   let l:title = substitute(a:ctx.name, '_', ' ', 'g')
   return cases#capitalize(l:title)

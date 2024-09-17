@@ -207,17 +207,18 @@ let g:wiki_viewer = {
 
 let g:wiki_templates = [
   \ { 'match_re':  '^0x',
-  \   'source_filename': '/home/alexey/.vim/.template.md'},
+  \   'source_filename': '/home/alexey/.vim/.random_page_template.md'},
+  \ { 'match_func': {x -> custom#IsJournalFile()},
+  \   'source_filename': '/home/alexey/.vim/.journal_template.md'},
   \ { 'match_func': {x -> v:true},
-  \   'source_filename': '/home/alexey/.vim/.index_template.md'},
+  \   'source_filename': '/home/alexey/.vim/.default_template.md'},
   \]
 
 let g:wiki_link_creation = {
   \ 'md': {
   \   'link_type': 'md',
   \   'url_extension': '.md',
-  \   'url_transform': { x ->
-  \     custom#GetRandomPageName()},
+  \   'url_transform': { x -> custom#GetRandomPageName()},
   \ },
   \}
 
@@ -231,5 +232,16 @@ let g:wiki_select_method = {
 let g:wiki_fzf_opts = '--preview "bat --language=LaTeX --style=numbers --color=always {1}" --exact'
 let g:wiki_fzf_pages_opts = g:wiki_fzf_opts
 let g:wiki_fzf_links_opts = g:wiki_fzf_opts
+
+let g:wiki_journal = {
+  \ 'name': 'journal',
+  \ 'root': '',
+  \ 'frequency': 'daily',
+  \ 'date_format': {
+  \   'daily' : '%Y/%m/%d',
+  \   'weekly' : '%Y/%m/week_%V',
+  \   'monthly' : '%Y/%m/summary',
+  \ },
+  \}
 
 nmap <leader>ww :call custom#OpenWikiPage() <CR>
