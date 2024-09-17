@@ -10,5 +10,9 @@ nmap <leader>et :call custom#EditMetadata("title")<cr>
 
 augroup export
   autocmd!
-  autocmd BufWritePost ~/Nextcloud/Notes/Wiki/*.md silent! !pandoc --quiet --standalone --toc --extract-media=.. --metadata-file=metadata.yaml --lua-filter=links-to-html.lua --mathjax --template easy_template.html --citeproc -f markdown -t html5 % -o %:p:h/build/%:t:r.html
+  autocmd BufWritePost ~/Nextcloud/Notes/Wiki/*.md {
+    if ! b:wiki.in_journal
+      silent! !pandoc --quiet --standalone --toc --extract-media=.. --metadata-file=metadata.yaml --lua-filter=links-to-html.lua --mathjax --template=easy_template.html --citeproc -f markdown -t html5 % -o %:p:h/build/%:t:r.html
+    endif
+    }
 augroup end
