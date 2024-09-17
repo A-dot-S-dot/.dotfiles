@@ -207,9 +207,11 @@ let g:wiki_viewer = {
 
 let g:wiki_templates = [
   \ { 'match_re':  '^0x',
-  \   'source_filename': '/home/alexey/.vim/.template.md'},
+  \   'source_filename': '/home/alexey/.vim/.random_page_template.md'},
+  \ { 'match_func': {x -> custom#IsJournalFile()},
+  \   'source_filename': '/home/alexey/.vim/.journal_template.md'},
   \ { 'match_func': {x -> v:true},
-  \   'source_filename': '/home/alexey/.vim/.index_template.md'},
+  \   'source_filename': '/home/alexey/.vim/.default_template.md'},
   \]
 
 let g:wiki_link_creation = {
