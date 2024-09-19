@@ -9,9 +9,13 @@ function! custom#IsJournalFile() abort
   return v:false
 endfunction
 
-function! custom#CreateTitle(ctx, text) abort
+function! custom#GetTitle(ctx) abort
   let l:title = substitute(a:ctx.name, '_', ' ', 'g')
   return cases#capitalize(l:title)
+endfunction
+
+function! custom#GetDate(ctx) abort
+  return strftime("%a; %Y-%m-%d; %H:%M")
 endfunction
 
 function! custom#EditMetadata(key) abort
