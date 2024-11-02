@@ -707,7 +707,7 @@ snippet "\\to ([._'^])" "to with description" irA
 \xrightarrow`!p
 snip.rv="[" if match.group(1) in [".", "_"] else "{"
 `$1`!p
-snip.rv="]" if match.group(1) in [".", "_"] else "}"
+snip.rv="]{}" if match.group(1) in [".", "_"] else "}"
 `$0
 endsnippet
 
