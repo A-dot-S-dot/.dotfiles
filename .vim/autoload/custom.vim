@@ -15,7 +15,7 @@ function! custom#GetTitle(ctx) abort
 endfunction
 
 function! custom#GetDate(ctx) abort
-  return strftime("%a; %Y-%m-%d; %H:%M")
+  return strftime(" %d. %b %Y - %a - %H:%M")
 endfunction
 
 function! custom#EditMetadata(key) abort
