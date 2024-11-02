@@ -386,8 +386,13 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 endsnippet
 
 context "math()"
-snippet sr "\sqrt{}" iA
+snippet sq "square root" iA
 \sqrt{${1:${VISUAL}}} $0
+endsnippet
+
+context "math()"
+snippet sqrt{' "other roots" iA
+sqrt[$1]{$0
 endsnippet
 
 priority 10
