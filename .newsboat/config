@@ -33,3 +33,6 @@ unbind-key h feedlist
 
 # Open videos in mpv
 macro y set browser "mpv %u" ; open-in-browser ; set browser "elinks %u"
+
+# other bindings
+bind-key s reload-all
