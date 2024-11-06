@@ -128,21 +128,22 @@ bind editor <space> noop
 bind editor <Tab> complete-query
 bind editor ^T complete
 
+bind index,pager a noop
 bind index,pager c noop
 bind index,pager i noop
 bind index,pager g noop
 bind index,pager m noop
+bind index,pager o noop
 bind index,pager s noop
-bind index,pager v noop
 bind index,pager x noop
-bind index,pager va view-attachments
+bind index,pager a view-attachments
 bind index,pager c mail
 bind index,pager D purge-message
 bind index,pager gf change-folder
 bind index,pager m save-message
 bind index,pager R group-reply
 bind index,pager x sync-mailbox
-macro index,pager vh "<view-attachments><search>html<enter><view-mailcap><exit>" "view html text in browser"
+macro index,pager o "<view-attachments><search>html<enter><view-mailcap><exit>" "view html text in browser"
 macro index,pager gi "<change-folder>=INBOX<enter>" "go to inbox"
 macro index,pager gd "<change-folder>=Drafts<enter>" "go to drafts"
 macro index,pager gt "<change-folder>=Trash<enter>" "go to trash"
