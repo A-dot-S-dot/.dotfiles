@@ -286,9 +286,16 @@ snippet Del "Delta" iA
 \Delta
 endsnippet
 
+priority 50
 context "math()"
 snippet eps "epsilon" iA
 \varepsilon
+endsnippet
+
+priority 100
+context "math()"
+snippet veps "varepsilon" iA
+\epsilon
 endsnippet
 
 context "math()"
@@ -379,8 +386,13 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 endsnippet
 
 context "math()"
-snippet sr "\sqrt{}" iA
+snippet sq "square root" iA
 \sqrt{${1:${VISUAL}}} $0
+endsnippet
+
+context "math()"
+snippet sqrt{' "other roots" iA
+sqrt[$1]{$0
 endsnippet
 
 priority 10
@@ -670,17 +682,17 @@ endsnippet
 
 # Arrow symbols
 context "math()"
-snippet => "implies" Ai
+snippet => "implies" iA
 \implies $0
 endsnippet
 
 context "math()"
-snippet =< "implied by" Ai
+snippet =< "implied by" iA
 \impliedby $0
 endsnippet
 
 context "math()"
-snippet iff "iff" i
+snippet iff "iff" iA
 \iff $0
 endsnippet
 
@@ -695,7 +707,7 @@ snippet "\\to ([._'^])" "to with description" irA
 \xrightarrow`!p
 snip.rv="[" if match.group(1) in [".", "_"] else "{"
 `$1`!p
-snip.rv="]" if match.group(1) in [".", "_"] else "}"
+snip.rv="]{}" if match.group(1) in [".", "_"] else "}"
 `$0
 endsnippet
 
