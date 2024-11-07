@@ -114,6 +114,9 @@ bind browser G bottom-page
 bind browser l select-entry
 macro browser h "<change-dir><kill-line>..<enter>" "go to parent folder"
 
+macro compose A noop
+macro compose A \
+"<shell-escape>bash $HOME/.config/neomutt/filepicker<enter><enter-command>source $HOME/.config/neomutt/tmpfile<enter><shell-escape>bash $HOME/.config/neomutt/filepicker clean<enter>" "Attach with your file manager"
 macro compose m \
 "<enter-command>set pipe_decode<enter>\
 <pipe-message>~/.config/neomutt/create-html-mail<enter>\
