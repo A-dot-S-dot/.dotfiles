@@ -11,9 +11,14 @@ from __future__ import (absolute_import, division, print_function)
 
 # You can import any python module as needed.
 import os
+from os.path import join, expanduser, lexists
+from os import makedirs
+import re
+import subprocess
 
 # You always need to import ranger.api.commands here to get the Command class:
 from ranger.api.commands import Command
+from ranger.ext.get_executables import get_executables
 
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
@@ -61,6 +66,7 @@ class my_edit(Command):
         # content of the current directory.
         return self._tab_directory_content()
 
+
 class mkcd(Command):
     """
     :mkcd <dirname>
@@ -69,10 +75,6 @@ class mkcd(Command):
     """
 
     def execute(self):
-        from os.path import join, expanduser, lexists
-        from os import makedirs
-        import re
-
         dirname = join(self.fm.thisdir.path, expanduser(self.rest(1)))
         if not lexists(dirname):
             makedirs(dirname)
@@ -93,6 +95,7 @@ class mkcd(Command):
         else:
             self.fm.notify("file/directory exists!", bad=True)
 
+
 class fzf_select(Command):
     """
     :fzf_select
@@ -103,10 +106,6 @@ class fzf_select(Command):
     """
 
     def execute(self):
-        import subprocess
-        import os
-        from ranger.ext.get_executables import get_executables
-
         if 'fzf' not in get_executables():
             self.fm.notify('Could not find fzf in the PATH.', bad=True)
             return
@@ -152,3 +151,63 @@ class fzf_select(Command):
                 self.fm.cd(selected)
             else:
                 self.fm.select_file(selected)
+
+
+class toggle_flat(Command):
+    """
+    :toggle_flat
+
+    Flattens or unflattens the directory view.
+    """
+
+    def execute(self):
+        if self.fm.thisdir.flat == 0:
+            self.fm.thisdir.unload()
+            self.fm.thisdir.flat = -1
+            self.fm.thisdir.load_content()
+        else:
+            self.fm.thisdir.unload()
+            self.fm.thisdir.flat = 0
+            self.fm.thisdir.load_content()
+
+
+def show_error_in_console(msg, fm):
+    fm.notify(msg, bad=True)
+
+def navigate_path(fm, selected):
+    if not selected:
+        return
+
+    selected = os.path.abspath(selected)
+    if os.path.isdir(selected):
+        fm.cd(selected)
+    elif os.path.isfile(selected):
+        fm.select_file(selected)
+    else:
+        show_error_in_console(f"Neither directory nor file: {selected}", fm)
+        return
+
+def select_with_fzf(fzf_cmd, input, fm):
+    fm.ui.suspend()
+    try:
+        # stderr is used to open to attach to /dev/tty
+        proc = subprocess.Popen(fzf_cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        stdout, _ = proc.communicate(input=input)
+
+        # ESC gives 130
+        if proc.returncode not in [0, 130]:
+            raise Exception(f"Bad process exit code: {proc.returncode}, stdout={stdout}")
+    finally:
+        fm.ui.initialize()
+    return stdout.strip()
+
+class dir_history_navigate(Command):
+    def execute(self):
+        lst = []
+        for d in reversed(self.fm.tabs[self.fm.current_tab].history.history):
+            lst.append(d.path)
+
+        fm = self.fm
+        selected = select_with_fzf(["fzf"], "\n".join(lst), fm)
+
+        navigate_path(fm, selected)
